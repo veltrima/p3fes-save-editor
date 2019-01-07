@@ -1,4 +1,4 @@
-package com.example.editor;
+package saveEditor;
 
 import java.io.IOException;
 
@@ -8,6 +8,7 @@ public class Main {
 	    FileReader fr = new FileReader(name);
 	    byte[] data = fr.readFile();
 	    SaveFile save = new SaveFile(data);
+	    EditorApplication e = new EditorApplication();
 	}
 
 }

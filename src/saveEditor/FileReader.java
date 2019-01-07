@@ -1,5 +1,4 @@
-package com.example.editor;
-
+package saveEditor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +12,7 @@ public class FileReader {
         fileName = inFileName;
     }
 
-    byte[] readFile() throws IOException {
+    public byte[] readFile() throws IOException {
         Path path = Paths.get(fileName);
         return Files.readAllBytes(path);
     }
