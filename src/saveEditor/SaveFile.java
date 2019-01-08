@@ -14,19 +14,38 @@ public class SaveFile {
 	private int playerLevel, playerExp, yen, plumes;
 	private String playerFirstName, playerLastName, playerSkills, revivalFlag;
 	
+	private int MAX_LEVEL = 99;
+	private int MAX_EXP = 1358428;
+	
+	// Index at level is exp needed for that level
+	private int[] expNeededPerLevel = {
+		-1, 0, 20, 47, 99, 185, 312, 490, 726, 1030, 1410, 1873, 2429, 
+		3085, 3851, 4735, 5744, 6888,8174, 9612, 11210, 12975, 14917,
+		17043, 19363, 21885, 24616, 27566, 30742, 34154, 37810, 41717,
+		45885, 50321, 55035, 60035, 65328, 70924, 76830, 83056, 89610, 
+		96499, 103733, 111319, 119267, 127585, 136280, 145362, 154838, 
+		164718, 175010, 185721, 196861, 208437, 220459, 232935, 245872,
+		259280, 273166, 287540, 302410, 317783, 333669, 350075, 367011, 
+		384485, 402504, 421078, 440214, 459922, 480210, 501085, 522557, 
+		544633, 567323, 590635, 614576, 639156, 664382, 690264, 716810, 
+		744027, 771925, 800511, 829795, 859785, 890488, 921914, 954070, 
+		986966, 1020610, 1055009, 1090173, 1126109, 1162827, 1200335, 
+		1238640, 1277752, 1317678, 1358428
+	};
+			
 	private String[] partyMember = {
 		"yukari",
 		"junpei",
-		"koromaru",
 		"akihiko",
 		"mitsuru",
 		"ken",
-		"shinjiro",
 		"aigis",
+		"shinjiro",
+		"koromaru",
 		"fuuka"
 	};
 	
-	private int[] academicRanks = {
+	private int[] academicsRanks = {
 		0,
 		20,
 		80,
@@ -199,7 +218,9 @@ public class SaveFile {
 	private HashMap<String, Integer> levelMap = new HashMap<>(); 
 	private HashMap<String, Integer> expMap = new HashMap<>(); 
 	private HashMap<String, String> skillMap = new HashMap<>();
-	private HashMap<String, Integer> statMap = new HashMap<>(); 
+	private HashMap<String, Integer> statMap = new HashMap<>();
+	private HashMap<String, Boolean> ultFlagMap = new HashMap<>(); // 30 vs 00
+	private HashMap<String, Integer> personaFlagMap = new HashMap<>(); 
 	private HashMap<String, String> indexMap = new HashMap<>();
 	private HashMap<String, String> nameHexToLetter = new HashMap<>();
 	private HashMap<String, String> nameLetterToHex = new HashMap<>();
@@ -217,12 +238,42 @@ public class SaveFile {
 		
 		for (int i = 0; i < partyMember.length; i++) {
 			String index = "BLOCK_" + partyMember[i].toUpperCase() + "_INDEX";
-			levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 0, 4));
-			expMap.put(partyMember[i] + "Exp", getByteRangeInt(data, indexMap.get(index), 4, 4));
 			
-			String skills = getByteRangeString(data, indexMap.get(index), 8, 2);
+			//if (partyMember[i] == "koromaru" || partyMember[i] == "fuuka" || partyMember[i] == "shinjiro") {
+			//	levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 0, 4) - 7680);
+			//} else {
+			//	levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 0, 4));
+			//}
+			
+			if (i < 6) { // Not Shinjiro, Koromaru, or Fuuka, because their structure is different
+				int f = getByteRangeInt(data, indexMap.get(index), 3, 1);
+				if (f == 0) {
+					ultFlagMap.put(partyMember[i], false);
+				} else if (f == 30) {
+					ultFlagMap.put(partyMember[i], true);
+				} else {
+					ultFlagMap.put(partyMember[i], null); // ERROR
+					System.out.println("Oops");
+				}
+			} else if (i == 8) { // For Fuuka, only use personaFlagMap. If val == 201 (0xC9), yes. If val == 200 (0xC8), no.
+				int f = getByteRangeInt(data, indexMap.get(index), 0, 1);
+				if (f == 200) {
+					ultFlagMap.put(partyMember[i], false);
+				} else if (f == 201) {
+					ultFlagMap.put(partyMember[i], true);
+				} else {
+					ultFlagMap.put(partyMember[i], null); // ERROR
+					System.out.println("Oops");
+				}
+			}
+			
+			personaFlagMap.put(partyMember[i], getByteRangeInt(data, indexMap.get(index), 0, 1));
+			levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 2, 1));
+			expMap.put(partyMember[i] + "Exp", getByteRangeInt(data, indexMap.get(index), 6, 4));
+			
+			String skills = getByteRangeString(data, indexMap.get(index), 10, 2);
 			for (int j = 2; j < 16; j += 2) {
-				skills += getByteRangeString(data, indexMap.get(index), 8 + j, 2);
+				skills += getByteRangeString(data, indexMap.get(index), 10 + j, 2);
 			}
 
 			skillMap.put(partyMember[i] + "Skills", skills);
@@ -235,8 +286,40 @@ public class SaveFile {
 		statMap.put("courage", getByteRangeInt(data, indexMap.get("STAT_COURAGE_INDEX"), 0, 2));
 		
 		revivalFlag = getByteRangeString(data, indexMap.get("REVIVAL_FLAG_INDEX"), 0, 1);
-		yen = getByteRangeInt(data, indexMap.get("YEN_INDEX"), 0, 1);
+		yen = getByteRangeInt(data, indexMap.get("YEN_INDEX"), 0, 4);
 		plumes = getByteRangeInt(data, indexMap.get("PLUMES_INDEX"), 0, 1);
+	}
+	
+	public int getPlayerLevel () {
+		return this.playerLevel;
+	}
+	
+	public void setPlayerLevel (int val) {
+		this.playerLevel = val;
+	}
+	
+	public int getPlayerExp () {
+		return this.playerExp;
+	}
+	
+	public void setPlayerExp (int val) {
+		this.playerExp = val;
+	}
+	
+	public String getPlayerFirstName () {
+		return this.playerFirstName;
+	}
+	
+	public void setPlayerFirstName (String s) {
+		this.playerFirstName = s;
+	}
+	
+	public String getPlayerLastName () {
+		return this.playerLastName;
+	}
+	
+	public void setPlayerLastName (String s) {
+		this.playerLastName = s;
 	}
 	
 	public HashMap<String, Integer> getLevelMap () {
@@ -263,12 +346,62 @@ public class SaveFile {
 		this.skillMap = newMap;
 	}
 	
-	public HashMap<String, Integer> getStatMap () {
-		return this.statMap;
+	public HashMap<String, Boolean> getUltFlagMap () {
+		return this.ultFlagMap;
 	}
 	
-	public void setStatMap (HashMap<String, Integer> newMap) {
-		this.statMap = newMap;
+	// Name must be correct
+	public void toggleUltFlagMap (String characterName) {
+		if (!this.ultFlagMap.get(characterName)) {
+			this.ultFlagMap.replace(characterName, true);
+		} else if (this.ultFlagMap.get(characterName)) {
+			this.ultFlagMap.replace(characterName, false);
+		} else {
+			System.out.println("You got an oopsie on your hands.");
+		}
+		
+	}
+	
+	public int getAcademicsLevel () {
+		for (int c = academicsRanks.length - 1; c >= 0; c--) {
+			if (this.statMap.get("academics") >= academicsRanks[c]) {
+				return c + 1;
+			}
+		}
+		return 1;
+	}
+	
+	// Min value of 1, max of 6
+	public void setAcademicsLevel (int level) {
+		this.statMap.replace("academics", academicsRanks[level - 1]);
+	}
+	
+	public int getCharmLevel () {
+		for (int c = charmCourageRanks.length - 1; c >= 0; c--) {
+			if (this.statMap.get("charm") >= charmCourageRanks[c]) {
+				return c + 1;
+			}
+		}
+		return 1;
+	}
+	
+	// Min value of 1, max of 6
+	public void setCharmLevel (int level) {
+		this.statMap.replace("charm", charmCourageRanks[level - 1]);
+	}
+	
+	public int getCourageLevel () {
+		for (int c = charmCourageRanks.length - 1; c >= 0; c--) {
+			if (this.statMap.get("courage") >= charmCourageRanks[c]) {
+				return c + 1;
+			}
+		}
+		return 1;
+	}
+	
+	// Min value of 1, max of 6
+	public void setCourageLevel (int level) {
+		this.statMap.replace("courage", charmCourageRanks[level - 1]);
 	}
 	
 	public String getRevivalFlag () {
@@ -359,7 +492,7 @@ public class SaveFile {
 			exp = expMap.get(partyMember[i] + "Exp");
 			skills = skillMap.get(partyMember[i] + "Skills");	
 			
-			updateByteArray(byteStream, intToBytes(level, 4), indexMap.get(index));
+			updateByteArray(byteStream, intToBytes(level, 1), indexMap.get(index));
 			updateByteArray(byteStream, intToBytes(exp, 4), indexMap.get(index) + 4);
 			updateByteArray(byteStream, hexToBytes(skills), indexMap.get(index) + 8);
 		}
@@ -452,19 +585,23 @@ public class SaveFile {
 		indexMap.put("PLAYER_EXP_INDEX", "8B0");
 		
 		/* BLOCK STRUCTURE: 
-		 * Level - 4 bytes
+		 * Persona flag (unsure specifics) - 1 byte
+		 * 1 blank byte
+		 * Level - 1 byte
+		 * Ultimate persona flag - 1 byte (00 no, 1E yes)
+		 * 2 blank bytes
 		 * Exp - 4 bytes
 		 * Ability slot - 2 bytes * 8 slots
 		 */
-		indexMap.put("BLOCK_JUNPEI_INDEX", "7805");
-		indexMap.put("BLOCK_YUKARI_INDEX", "6CB9");
-		indexMap.put("BLOCK_KOROMARU_INDEX", "8AD9");
-		indexMap.put("BLOCK_SHINJIRO_INDEX", "8715");
-		indexMap.put("BLOCK_AKIHIKO_INDEX", "7F8D");
-		indexMap.put("BLOCK_MITSURU_INDEX", "7441");
-		indexMap.put("BLOCK_KEN_INDEX", "8351");
-		indexMap.put("BLOCK_AIGIS_INDEX", "707D");
-		indexMap.put("BLOCK_FUUKA_INDEX", "7BC9");
+		indexMap.put("BLOCK_JUNPEI_INDEX", "7803");
+		indexMap.put("BLOCK_YUKARI_INDEX", "6CB7");
+		indexMap.put("BLOCK_KOROMARU_INDEX", "8AD7");
+		indexMap.put("BLOCK_SHINJIRO_INDEX", "8713");
+		indexMap.put("BLOCK_AKIHIKO_INDEX", "7F8B");
+		indexMap.put("BLOCK_MITSURU_INDEX", "743F");
+		indexMap.put("BLOCK_KEN_INDEX", "834F");
+		indexMap.put("BLOCK_AIGIS_INDEX", "707B");
+		indexMap.put("BLOCK_FUUKA_INDEX", "7BC7");
 		
 		indexMap.put("YEN_INDEX", "6560"); // 4 bytes
 		indexMap.put("PLUMES_INDEX", "25C4"); // 1 byte
