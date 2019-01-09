@@ -6,18 +6,21 @@ import java.nio.file.Paths;
 
 public class FileReader {
 	
-	String fileName;
+	String fileName, inDirectory;
 
-    public FileReader(String inFileName) {
+    public FileReader(String inFileName, String inDir) {
         fileName = inFileName;
+        inDirectory = inDir;
     }
 
     public byte[] readFile() throws IOException {
-        Path path = Paths.get(fileName);
+        Path path = Paths.get(inDirectory + fileName);
         return Files.readAllBytes(path);
     }
     
     void writeFile(byte[] data) throws IOException {
-    	
+    	Files.createDirectories(Paths.get("./output"));
+    	Path path = Paths.get("./output/" + fileName);
+    	Files.write(path, data);
     }
 }

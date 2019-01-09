@@ -1,5 +1,12 @@
 package saveEditor;
 
+/* TODO:
+ * Update skills functions
+ * Update persona flag thing to be written properly based on ult status
+ * Add restrictions to possible inputs in text boxes
+ * Make layout look less ass
+ */
+
 import java.awt.EventQueue;
 import java.awt.FileDialog;
 
@@ -132,8 +139,7 @@ public class EditorApplication {
 				}
 				else {
 					//System.out.println("You chose " + filename);
-					filename = fd.getDirectory() + fd.getFile();
-					fr = new FileReader(filename);
+					fr = new FileReader(filename, fd.getDirectory());
 					try {
 						currentSave = new SaveFile(fr.readFile());
 						repopFields();
@@ -149,6 +155,21 @@ public class EditorApplication {
 		JButton btnExport = new JButton("Export");
 		btnExport.setToolTipText("Export to save file.");
 		btnExport.setBounds(442, 16, 93, 29);
+		btnExport.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	if (currentSave != null && fr != null) {
+		    		try {
+		    			currentSave.writeToByteArray();
+						fr.writeFile(currentSave.getRaw());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						System.out.println("nooooo");
+						e1.printStackTrace();
+					}
+		    	}	  
+		    }
+		});
 		frmPfesSaveEditor.getContentPane().add(btnExport);
 		
 		// Player name
@@ -341,9 +362,6 @@ public class EditorApplication {
 		frmPfesSaveEditor.getContentPane().add(spinnerCou);
 		
 		
-
-		
-		
 		JLabel lblYen = new JLabel("Yen");
 		lblYen.setBounds(343, 283, 69, 20);
 		frmPfesSaveEditor.getContentPane().add(lblYen);
@@ -366,6 +384,10 @@ public class EditorApplication {
 		btnMatchAll.setToolTipText("Sets the level and exp of all party members to be that of the player.");
 		btnMatchAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if (currentSave != null) {
+					currentSave.setToMC();
+					repopFields();
+				}	
 			}
 		});
 		btnMatchAll.setBounds(142, 519, 157, 29);
@@ -373,6 +395,14 @@ public class EditorApplication {
 		
 		JButton btnMaxAll = new JButton("Max All");
 		btnMaxAll.setBounds(15, 519, 115, 29);
+		btnMaxAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (currentSave != null) {
+					currentSave.setMax();
+					repopFields();
+				}
+			}
+		});
 		frmPfesSaveEditor.getContentPane().add(btnMaxAll);
 		
 		JLabel lblRevivalFlags = new JLabel("Revival Flags (of 4)");
@@ -434,6 +464,15 @@ public class EditorApplication {
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.setToolTipText("Updates the save file object. Required before exporting.");
 		btnUpdate.setBounds(343, 479, 192, 29);
+		btnUpdate.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	if (currentSave != null) {
+		    		updateSaveFile();
+		    		repopFields();
+		    	}
+		    }
+		});
 		frmPfesSaveEditor.getContentPane().add(btnUpdate);
 		
 		label = new JLabel("(11/06, 11/11, 11/14, 11/22)");
@@ -501,7 +540,97 @@ public class EditorApplication {
 		} else if (flag.equals("ff")) {
 			spinnerRev.setValue(4);
 		} else {
-			spinnerRev.setValue(8);
+			spinnerRev.setValue(0);
+		}
+	}
+	
+	// Updates the save file with data from the form.
+	private void updateSaveFile () {
+		HashMap<String, Integer> levelMap = currentSave.getLevelMap();
+		HashMap<String, Integer> expMap = currentSave.getExpMap();
+		HashMap<String, Boolean> ultFlagMap = currentSave.getUltFlagMap();
+		
+		currentSave.setPlayerFirstName(txtFirstName.getText());
+		currentSave.setPlayerLastName(txtLastName.getText());
+		
+		if (currentSave.getPlayerLevel() != Integer.valueOf(txtMclevel.getText())) {
+			currentSave.setPlayerLevel(Integer.valueOf(txtMclevel.getText()));
+			currentSave.setPlayerExp(currentSave.expForLevel(Integer.valueOf(txtMclevel.getText())));
+		} else if (currentSave.getPlayerExp() != Integer.valueOf(txtMcexp.getText())) {
+			currentSave.setPlayerExp(Integer.valueOf(txtMcexp.getText()));
+			currentSave.setPlayerLevel(currentSave.levelForExp(Integer.valueOf(txtMcexp.getText())));
+		}
+		
+		
+		txtJlevel.setText(Integer.toString(levelMap.get("junpeiLevel")));
+		txtYlevel.setText(Integer.toString(levelMap.get("yukariLevel")));
+		txtAlevel.setText(Integer.toString(levelMap.get("akihikoLevel")));
+		txtMlevel.setText(Integer.toString(levelMap.get("mitsuruLevel")));
+		txtFlevel.setText(Integer.toString(levelMap.get("fuukaLevel"))); 
+		txtAilevel.setText(Integer.toString(levelMap.get("aigisLevel")));
+		txtKlevel.setText(Integer.toString(levelMap.get("kenLevel")));
+		txtKolevel.setText(Integer.toString(levelMap.get("koromaruLevel")));
+		txtSlevel.setText(Integer.toString(levelMap.get("shinjiroLevel"))); 
+		
+		txtJexp.setText(Integer.toString(expMap.get("junpeiExp")));
+		txtYexp.setText(Integer.toString(expMap.get("yukariExp")));
+		txtAexp.setText(Integer.toString(expMap.get("akihikoExp")));
+		txtMexp.setText(Integer.toString(expMap.get("mitsuruExp")));
+		txtFexp.setText(Integer.toString(expMap.get("fuukaExp"))); 
+		txtAiexp.setText(Integer.toString(expMap.get("aigisExp")));
+		txtKexp.setText(Integer.toString(expMap.get("kenExp")));
+		txtKoexp.setText(Integer.toString(expMap.get("koromaruExp")));
+		txtSexp.setText(Integer.toString(expMap.get("shinjiroExp"))); 
+		
+		
+		currentSave.updateUltFlagMap("junpei", checkJult.isSelected());
+		currentSave.updateUltFlagMap("yukari", checkYult.isSelected());
+		currentSave.updateUltFlagMap("akihiko", checkAult.isSelected());
+		currentSave.updateUltFlagMap("mitsuru", checkMult.isSelected());
+		currentSave.updateUltFlagMap("fuuka", checkFult.isSelected());
+		currentSave.updateUltFlagMap("ken", checkKult.isSelected());
+		currentSave.updateUltFlagMap("aigis", checkAiult.isSelected());
+		
+		
+		if ((Integer) spinnerAca.getValue() != currentSave.getAcademicsLevel()) {
+			currentSave.setAcademicsLevel((Integer) spinnerAca.getValue());
+		}
+		if ((Integer) spinnerCha.getValue() != currentSave.getCharmLevel()) {
+			currentSave.setCharmLevel((Integer) spinnerCha.getValue());
+		}
+		if ((Integer) spinnerCou.getValue() != currentSave.getCourageLevel()) {
+			currentSave.setCourageLevel((Integer) spinnerCou.getValue());
+		}
+
+		
+		int newYen = Integer.valueOf(txtYen.getText());
+		int newPlumes = Integer.valueOf(txtPlumes.getText());
+		
+		if (newYen > 9999999) {
+			newYen = 9999999;
+		}
+		
+		if (newPlumes > 99) {
+			newPlumes = 99;
+		}
+		
+		currentSave.setYen(newYen);
+		currentSave.setPlumes(newPlumes);
+		
+		//try {
+		 //   spinner.commitEdit();
+		//} catch ( java.text.ParseException e ) { .. }
+		
+		if ((Integer) spinnerRev.getValue() == 0) {
+			currentSave.setRevivalFlag("00");
+		} else if ((Integer) spinnerRev.getValue() == 1) {
+			currentSave.setRevivalFlag("11");
+		} else if ((Integer) spinnerRev.getValue() == 2) {
+			currentSave.setRevivalFlag("33");
+		} else if ((Integer) spinnerRev.getValue() == 3) {
+			currentSave.setRevivalFlag("77");
+		} else if ((Integer) spinnerRev.getValue() == 4) {
+			currentSave.setRevivalFlag("FF");
 		}
 	}
 }

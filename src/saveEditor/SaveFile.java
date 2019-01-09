@@ -350,16 +350,9 @@ public class SaveFile {
 		return this.ultFlagMap;
 	}
 	
-	// Name must be correct
-	public void toggleUltFlagMap (String characterName) {
-		if (!this.ultFlagMap.get(characterName)) {
-			this.ultFlagMap.replace(characterName, true);
-		} else if (this.ultFlagMap.get(characterName)) {
-			this.ultFlagMap.replace(characterName, false);
-		} else {
-			System.out.println("You got an oopsie on your hands.");
-		}
-		
+	// Name **must** be correct
+	public void updateUltFlagMap (String name, Boolean u) {
+		ultFlagMap.replace(name, u);
 	}
 	
 	public int getAcademicsLevel () {
@@ -452,10 +445,15 @@ public class SaveFile {
 		byte[] b = new byte[16];
 		byte[] letterBytes;
 		for (int i = 0; i < 8; i++) {
-			letter = name.substring(i, i + 1);
-			letterBytes = hexToBytes(nameLetterToHex.get(letter));
-			b[i * 2] = letterBytes[0];
-			b[i * 2 + 1] = letterBytes[1];
+			if (i >= name.length()) {
+				b[i * 2] = 0;
+				b[i * 2 + 1] = 0;
+			} else {
+				letter = name.substring(i, i + 1);
+				letterBytes = hexToBytes(nameLetterToHex.get(letter));
+				b[i * 2] = letterBytes[0];
+				b[i * 2 + 1] = letterBytes[1];
+			}	
 		}
 		return b;
 	}
@@ -478,48 +476,59 @@ public class SaveFile {
 	public void writeToByteArray() {
 		int level, exp;
 		String skills, index;
-		updateByteArray(byteStream, intToBytes(playerLevel, 1), indexMap.get("PLAYER_LEVEL_INDEX"));
-		updateByteArray(byteStream, intToBytes(playerExp, 4), indexMap.get("PLAYER_EXP_INDEX"));
+		updateByteArray(intToBytes(playerLevel, 1), indexMap.get("PLAYER_LEVEL_INDEX"), 0);
+		updateByteArray(intToBytes(playerExp, 4), indexMap.get("PLAYER_EXP_INDEX"), 0);
 		
-		updateByteArray(byteStream, nameToBytes(playerFirstName), indexMap.get("PLAYER_FIRST_NAME_INDEX_1"));
-		updateByteArray(byteStream, nameToBytes(playerFirstName), indexMap.get("PLAYER_FIRST_NAME_INDEX_2"));
-		updateByteArray(byteStream, nameToBytes(playerLastName), indexMap.get("PLAYER_LAST_NAME_INDEX_1"));
-		updateByteArray(byteStream, nameToBytes(playerLastName), indexMap.get("PLAYER_LAST_NAME_INDEX_2"));
+		updateByteArray(nameToBytes(playerFirstName), indexMap.get("PLAYER_FIRST_NAME_INDEX_1"), 0);
+		updateByteArray(nameToBytes(playerFirstName), indexMap.get("PLAYER_FIRST_NAME_INDEX_2"), 0);
+		updateByteArray(nameToBytes(playerLastName), indexMap.get("PLAYER_LAST_NAME_INDEX_1"), 0);
+		updateByteArray(nameToBytes(playerLastName), indexMap.get("PLAYER_LAST_NAME_INDEX_2"), 0);
 		
 		for (int i = 0; i < partyMember.length; i++) {
 			index = "BLOCK_" + partyMember[i].toUpperCase() + "_INDEX";
 			level = levelMap.get(partyMember[i] + "Level");
 			exp = expMap.get(partyMember[i] + "Exp");
-			skills = skillMap.get(partyMember[i] + "Skills");	
+			skills = skillMap.get(partyMember[i] + "Skills");
 			
-			updateByteArray(byteStream, intToBytes(level, 1), indexMap.get(index));
-			updateByteArray(byteStream, intToBytes(exp, 4), indexMap.get(index) + 4);
-			updateByteArray(byteStream, hexToBytes(skills), indexMap.get(index) + 8);
+			if (i < 6) { // Not Shinjiro, Koromaru, or Fuuka, because their structure is different
+				if (!ultFlagMap.get(partyMember[i])) {
+					updateByteArray(intToBytes(0, 1), indexMap.get(index), 3);
+				} else {
+					updateByteArray(intToBytes(30, 1), indexMap.get(index), 3);
+				}
+			} 
+			
+			updateByteArray(intToBytes(personaFlagMap.get(partyMember[i]), 1), indexMap.get(index), 0);
+			updateByteArray(intToBytes(level, 1), indexMap.get(index), 2);
+			updateByteArray(intToBytes(exp, 4), indexMap.get(index), 6);
+			updateByteArray(hexToBytes(skills), indexMap.get(index), 10);
 		}
 		
-		updateByteArray(byteStream, intToBytes(statMap.get("academics"), 2), indexMap.get("STAT_ACADEMICS_INDEX"));
-		updateByteArray(byteStream, intToBytes(statMap.get("charm"), 2), indexMap.get("STAT_CHARM_INDEX"));
-		updateByteArray(byteStream, intToBytes(statMap.get("courage"), 2), indexMap.get("STAT_COURAGE_INDEX"));
 		
-		updateByteArray(byteStream, hexToBytes(revivalFlag), indexMap.get("REVIVAL_FLAG_INDEX"));	
-		updateByteArray(byteStream, intToBytes(yen, 1), indexMap.get("YEN_INDEX"));
-		updateByteArray(byteStream, intToBytes(plumes, 1), indexMap.get("PLUMES_INDEX"));
+		updateByteArray(intToBytes(statMap.get("academics"), 2), indexMap.get("STAT_ACADEMICS_INDEX"), 0);
+		updateByteArray(intToBytes(statMap.get("charm"), 2), indexMap.get("STAT_CHARM_INDEX"), 0);
+		updateByteArray(intToBytes(statMap.get("courage"), 2), indexMap.get("STAT_COURAGE_INDEX"), 0);
+		
+		updateByteArray(hexToBytes(revivalFlag), indexMap.get("REVIVAL_FLAG_INDEX"), 0);	
+		updateByteArray(intToBytes(yen, 1), indexMap.get("YEN_INDEX"), 0);
+		updateByteArray(intToBytes(plumes, 1), indexMap.get("PLUMES_INDEX"), 0);
 		
 		String headerChecksum = generateHeaderChecksum();
 		String dataChecksum = generateDataChecksum();
-		updateByteArray(byteStream, hexToBytes(headerChecksum), indexMap.get("HEADER_CHECKSUM_INDEX"));
-		updateByteArray(byteStream, hexToBytes(dataChecksum), indexMap.get("DATA_CHECKSUM_INDEX"));	
+		updateByteArray(hexToBytes(headerChecksum), indexMap.get("HEADER_CHECKSUM_INDEX"), 0);
+		updateByteArray(hexToBytes(dataChecksum), indexMap.get("DATA_CHECKSUM_INDEX"), 0);	
 	}
 	
-	void updateByteArray(byte[] data, byte[] newData, String startIndex) {
-		int index = Integer.parseInt(startIndex, 16);
+	void updateByteArray(byte[] newData, String startIndex, int offset) {
+		int index = Integer.parseInt(startIndex, 16) + offset;
 		for (int i = 0; i < newData.length; i++) {
-			data[index + i] = newData[i]; // Double check if pointer issue here
+			byteStream[index + i] = newData[i]; // Double check if pointer issue here
 		}
 	}
 	
 	byte[] intToBytes(int input, int numBytes) {
-		return ByteBuffer.allocate(numBytes).order(ByteOrder.LITTLE_ENDIAN).putInt(input).array();
+		byte[] out = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(input).array(); // Needs to allocate 4 otherwise error is thrown
+		return Arrays.copyOfRange(out, 0, numBytes);
 	}
 	
 	// Thank you https://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-javav
@@ -551,7 +560,7 @@ public class SaveFile {
 		int headerEnd = Integer.parseInt(indexMap.get("HEADER_CHECKSUM_INDEX"), 16);
 		byte sum = 0;
 		for (int i = headerStart; i < headerEnd; i++) {
-			sum ^= byteStream[i];
+			sum += byteStream[i]; // Lol not even XOR
 		}
 		return String.format("%02x", sum);
 	}
@@ -561,7 +570,7 @@ public class SaveFile {
 		int headerEnd = Integer.parseInt(indexMap.get("DATA_CHECKSUM_INDEX"), 16);
 		byte sum = 0;
 		for (int i = headerStart; i < headerEnd; i++) {
-			sum ^= byteStream[i];
+			sum += byteStream[i];
 		}
 		return String.format("%02x", sum);
 	}
@@ -629,4 +638,53 @@ public class SaveFile {
 		    nameHexToLetter.put(entry.getValue(), entry.getKey());
 		}
 	}
+	
+	// Set every character's (including MC's) level and exp to max. 
+	public void setMax () {
+		playerLevel = MAX_LEVEL;
+		playerExp = MAX_EXP;
+		for (int i = 0; i < partyMember.length; i++) {
+			levelMap.put(partyMember[i] + "Level", MAX_LEVEL);
+			expMap.put(partyMember[i] + "Exp", MAX_EXP);
+		}
+		updateCharacterSkills();
+	}	
+	
+	// Set every party character's level and exp to that of the MC.
+	public void setToMC () { 
+		for (int i = 0; i < partyMember.length; i++) {
+			levelMap.put(partyMember[i] + "Level", playerLevel);
+			expMap.put(partyMember[i] + "Exp", playerExp);
+		}
+		updateCharacterSkills();
+	}
+	
+	// Sets exp to be correct for level.
+	public int expForLevel (int lvl) {
+		return expNeededPerLevel[lvl];
+	}
+	
+	// Sets level to be correct for exp.
+	public int levelForExp (int xp) {
+		for (int i = expNeededPerLevel.length - 1; i > 0; i--) {
+			if (xp >= expNeededPerLevel[i]) {
+				return i;
+			}
+		}
+		return -1; //error
+	}
+	
+	// Update all character's skills based on their level and ultimate persona status.
+	public void updateCharacterSkills () {
+		int currLevel;
+		for (int i = 0; i < partyMember.length; i++) {
+			currLevel = levelMap.get(partyMember[i] + "Level");
+			skillMap.get(partyMember[i] + "Skills");
+			if (i < 6) {
+				
+			}
+		}
+		
+	}
+	
 }
