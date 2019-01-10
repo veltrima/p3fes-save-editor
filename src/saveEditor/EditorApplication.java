@@ -1,9 +1,8 @@
 package saveEditor;
 
 /* TODO:
- * Update skills functions
- * Update persona flag thing to be written properly based on ult status
- * Add restrictions to possible inputs in text boxes
+ * Test
+ * Check what happens with blank name data.
  * Make layout look less ass
  */
 
@@ -14,6 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+
 import java.awt.GridLayout;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -27,7 +29,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.JSpinner;
 import javax.swing.JCheckBox;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.text.MaskFormatter;
+
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.HashMap;
@@ -122,6 +127,28 @@ public class EditorApplication {
 		frmPfesSaveEditor.setBounds(100, 100, 574, 620);
 		frmPfesSaveEditor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPfesSaveEditor.getContentPane().setLayout(null);
+		
+		SpinnerModel acaModel = new SpinnerNumberModel(1, 1, 6, 1);
+		SpinnerModel chaModel = new SpinnerNumberModel(1, 1, 6, 1);
+		SpinnerModel couModel = new SpinnerNumberModel(1, 1, 6, 1);
+		SpinnerModel revModel = new SpinnerNumberModel(0, 0, 4, 1);
+		
+		/*
+		MaskFormatter nameFormat = createFormatter("********");
+		nameFormat.setValidCharacters(" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		nameFormat.setPlaceholderCharacter(' ');
+		MaskFormatter levelFormat = createFormatter("#**");
+		levelFormat.setValidCharacters(" 0123456789");
+		levelFormat.setPlaceholderCharacter(' ');
+		MaskFormatter expFormat = createFormatter("#******");
+		expFormat.setValidCharacters("0123456789");
+		expFormat.setPlaceholderCharacter(' ');
+		MaskFormatter yenFormat = createFormatter("#******");
+		yenFormat.setValidCharacters("0123456789");
+		yenFormat.setPlaceholderCharacter(' ');
+		MaskFormatter plumesFormat = createFormatter("#**");
+		plumesFormat.setValidCharacters("0123456789");
+		plumesFormat.setPlaceholderCharacter(' '); */
 		
 		JButton btnImport = new JButton("Import");
 		btnImport.setToolTipText("Import save file.");
@@ -341,7 +368,7 @@ public class EditorApplication {
 		lblAcademics.setBounds(343, 131, 100, 20);
 		frmPfesSaveEditor.getContentPane().add(lblAcademics);
 		
-		spinnerAca = new JSpinner();
+		spinnerAca = new JSpinner(acaModel);
 		spinnerAca.setBounds(487, 128, 48, 26);
 		frmPfesSaveEditor.getContentPane().add(spinnerAca);
 		
@@ -349,7 +376,7 @@ public class EditorApplication {
 		lblCharm.setBounds(343, 170, 100, 20);
 		frmPfesSaveEditor.getContentPane().add(lblCharm);
 		
-		spinnerCha = new JSpinner();
+		spinnerCha = new JSpinner(chaModel);
 		spinnerCha.setBounds(487, 170, 48, 26);
 		frmPfesSaveEditor.getContentPane().add(spinnerCha);
 		
@@ -357,7 +384,7 @@ public class EditorApplication {
 		lblCourage.setBounds(343, 209, 100, 20);
 		frmPfesSaveEditor.getContentPane().add(lblCourage);
 		
-		spinnerCou = new JSpinner();
+		spinnerCou = new JSpinner(couModel);
 		spinnerCou.setBounds(487, 206, 48, 26);
 		frmPfesSaveEditor.getContentPane().add(spinnerCou);
 		
@@ -409,7 +436,7 @@ public class EditorApplication {
 		lblRevivalFlags.setBounds(343, 401, 120, 20);
 		frmPfesSaveEditor.getContentPane().add(lblRevivalFlags);
 		
-		spinnerRev = new JSpinner();
+		spinnerRev = new JSpinner(revModel);
 		spinnerRev.setBounds(487, 398, 48, 26);
 		frmPfesSaveEditor.getContentPane().add(spinnerRev);
 		
@@ -546,42 +573,69 @@ public class EditorApplication {
 	
 	// Updates the save file with data from the form.
 	private void updateSaveFile () {
-		HashMap<String, Integer> levelMap = currentSave.getLevelMap();
-		HashMap<String, Integer> expMap = currentSave.getExpMap();
-		HashMap<String, Boolean> ultFlagMap = currentSave.getUltFlagMap();
+		int currLevel, currExp;
+		String currParty;
 		
-		currentSave.setPlayerFirstName(txtFirstName.getText());
-		currentSave.setPlayerLastName(txtLastName.getText());
+		currentSave.setPlayerFirstName(ensureLetter(txtFirstName.getText()));
+		currentSave.setPlayerLastName(ensureLetter(txtLastName.getText()));
 		
-		if (currentSave.getPlayerLevel() != Integer.valueOf(txtMclevel.getText())) {
-			currentSave.setPlayerLevel(Integer.valueOf(txtMclevel.getText()));
-			currentSave.setPlayerExp(currentSave.expForLevel(Integer.valueOf(txtMclevel.getText())));
-		} else if (currentSave.getPlayerExp() != Integer.valueOf(txtMcexp.getText())) {
-			currentSave.setPlayerExp(Integer.valueOf(txtMcexp.getText()));
-			currentSave.setPlayerLevel(currentSave.levelForExp(Integer.valueOf(txtMcexp.getText())));
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtMclevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtMcexp.getText())));
+		
+		if (currentSave.getPlayerLevel() != currLevel) {
+			currentSave.setPlayerLevel(currLevel);
+			currentSave.setPlayerExp(currentSave.expForLevel(currLevel));
+		} else if (currentSave.getPlayerExp() != currExp) {
+			currentSave.setPlayerExp(currExp);
+			currentSave.setPlayerLevel(currentSave.levelForExp(currExp));
 		}
 		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtJlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtJexp.getText())));
+		currParty = "junpei";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
 		
-		txtJlevel.setText(Integer.toString(levelMap.get("junpeiLevel")));
-		txtYlevel.setText(Integer.toString(levelMap.get("yukariLevel")));
-		txtAlevel.setText(Integer.toString(levelMap.get("akihikoLevel")));
-		txtMlevel.setText(Integer.toString(levelMap.get("mitsuruLevel")));
-		txtFlevel.setText(Integer.toString(levelMap.get("fuukaLevel"))); 
-		txtAilevel.setText(Integer.toString(levelMap.get("aigisLevel")));
-		txtKlevel.setText(Integer.toString(levelMap.get("kenLevel")));
-		txtKolevel.setText(Integer.toString(levelMap.get("koromaruLevel")));
-		txtSlevel.setText(Integer.toString(levelMap.get("shinjiroLevel"))); 
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtYlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtYexp.getText())));
+		currParty = "yukari";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
 		
-		txtJexp.setText(Integer.toString(expMap.get("junpeiExp")));
-		txtYexp.setText(Integer.toString(expMap.get("yukariExp")));
-		txtAexp.setText(Integer.toString(expMap.get("akihikoExp")));
-		txtMexp.setText(Integer.toString(expMap.get("mitsuruExp")));
-		txtFexp.setText(Integer.toString(expMap.get("fuukaExp"))); 
-		txtAiexp.setText(Integer.toString(expMap.get("aigisExp")));
-		txtKexp.setText(Integer.toString(expMap.get("kenExp")));
-		txtKoexp.setText(Integer.toString(expMap.get("koromaruExp")));
-		txtSexp.setText(Integer.toString(expMap.get("shinjiroExp"))); 
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtAlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtAexp.getText())));
+		currParty = "akihiko";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
 		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtMlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtMexp.getText())));
+		currParty = "mitsuru";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtKlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtKexp.getText())));
+		currParty = "ken";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtKolevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtKoexp.getText())));
+		currParty = "koromaru";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtAilevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtAiexp.getText())));
+		currParty = "aigis";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtFlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtFexp.getText())));
+		currParty = "fuuka";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currLevel = scrubLevel(Integer.valueOf(ensureInt(txtSlevel.getText())));
+		currExp = scrubExp(Integer.valueOf(ensureInt(txtSexp.getText())));
+		currParty = "shinjiro";
+		updatePartyLevelAndExp(currParty, currLevel, currExp);
+		
+		currentSave.updateCharacterSkills();
 		
 		currentSave.updateUltFlagMap("junpei", checkJult.isSelected());
 		currentSave.updateUltFlagMap("yukari", checkYult.isSelected());
@@ -589,7 +643,15 @@ public class EditorApplication {
 		currentSave.updateUltFlagMap("mitsuru", checkMult.isSelected());
 		currentSave.updateUltFlagMap("fuuka", checkFult.isSelected());
 		currentSave.updateUltFlagMap("ken", checkKult.isSelected());
-		currentSave.updateUltFlagMap("aigis", checkAiult.isSelected());
+		currentSave.updateUltFlagMap("aigis", checkAiult.isSelected());	
+		currentSave.updatePersonaFlags();
+			
+		try {
+			spinnerRev.commitEdit();
+			spinnerAca.commitEdit();
+			spinnerCha.commitEdit();
+			spinnerCou.commitEdit();
+		} catch ( java.text.ParseException e ) { }
 		
 		
 		if ((Integer) spinnerAca.getValue() != currentSave.getAcademicsLevel()) {
@@ -602,9 +664,8 @@ public class EditorApplication {
 			currentSave.setCourageLevel((Integer) spinnerCou.getValue());
 		}
 
-		
-		int newYen = Integer.valueOf(txtYen.getText());
-		int newPlumes = Integer.valueOf(txtPlumes.getText());
+		int newYen = Integer.valueOf(ensureInt(txtYen.getText()));
+		int newPlumes = Integer.valueOf(ensureInt(txtPlumes.getText()));
 		
 		if (newYen > 9999999) {
 			newYen = 9999999;
@@ -617,10 +678,6 @@ public class EditorApplication {
 		currentSave.setYen(newYen);
 		currentSave.setPlumes(newPlumes);
 		
-		//try {
-		 //   spinner.commitEdit();
-		//} catch ( java.text.ParseException e ) { .. }
-		
 		if ((Integer) spinnerRev.getValue() == 0) {
 			currentSave.setRevivalFlag("00");
 		} else if ((Integer) spinnerRev.getValue() == 1) {
@@ -630,7 +687,76 @@ public class EditorApplication {
 		} else if ((Integer) spinnerRev.getValue() == 3) {
 			currentSave.setRevivalFlag("77");
 		} else if ((Integer) spinnerRev.getValue() == 4) {
-			currentSave.setRevivalFlag("FF");
+			currentSave.setRevivalFlag("ff");
 		}
+	}
+	
+	protected MaskFormatter createFormatter(String s) {
+	    MaskFormatter formatter = null;
+	    try {
+	        formatter = new MaskFormatter(s);
+	    } catch (java.text.ParseException exc) {
+	        System.err.println("formatter is bad: " + exc.getMessage());
+	        System.exit(-1);
+	    }
+	    return formatter;
+	}
+	
+	// Ensures level is between 1 and 99
+	private int scrubLevel (int level) {
+		if (level < 1) {
+			return 1;
+		} else if (level > 99) {
+			return 99;
+		} else {
+			return level;
+		}
+	}
+	
+	private int scrubExp (int exp) {
+		int MAX_EXP = 1358428;
+		if (exp < 0) {
+			return 0;
+		} else if (exp > MAX_EXP) {
+			return MAX_EXP;
+		} else {
+			return exp;
+		}
+	}
+	
+	// Assumes scrubbed level and exp.
+	private void updatePartyLevelAndExp (String name, int level, int exp) {
+		HashMap<String, Integer> levelMap = currentSave.getLevelMap();
+		HashMap<String, Integer> expMap = currentSave.getExpMap();
+		
+		int prevLevel = levelMap.get(name + "Level");
+		int prevExp = expMap.get(name + "Exp");
+		
+		if (currentSave != null) {
+			if (prevLevel != level) {
+				currentSave.setLevel(name, level);
+				currentSave.setExp(name, currentSave.expForLevel(level));
+			} else if (prevExp != exp) {
+				currentSave.setExp(name, exp);
+				currentSave.setLevel(name, currentSave.levelForExp(exp));
+			}
+		}
+	}
+	
+	// Ensures s only includes letters.
+	private String ensureLetter (String s) {
+		return s.replaceAll("[^A-Za-z]+", "");
+	}
+	
+	// Ensures s only includes digits.
+	private String ensureInt(String s) {
+		s = s.replaceAll("\\D+","");
+		if (s.length() == 0) {
+			s = "0";
+		} else if (s.length() >= 9) {
+			s = s.substring(0, 9);
+		}
+		return s;
+		
 	}
 }

@@ -12,7 +12,7 @@ public class SaveFile {
 	private byte[] byteStream;
 	
 	private int playerLevel, playerExp, yen, plumes;
-	private String playerFirstName, playerLastName, playerSkills, revivalFlag;
+	private String playerFirstName, playerLastName, revivalFlag;
 	
 	private int MAX_LEVEL = 99;
 	private int MAX_EXP = 1358428;
@@ -34,15 +34,15 @@ public class SaveFile {
 	};
 			
 	private String[] partyMember = {
-		"yukari",
-		"junpei",
-		"akihiko",
-		"mitsuru",
-		"ken",
-		"aigis",
-		"shinjiro",
-		"koromaru",
-		"fuuka"
+		"junpei", // 0
+		"yukari", // 1
+		"akihiko", // 2
+		"mitsuru", // 3
+		"ken", // 4
+		"aigis", // 5
+		"shinjiro", // 6
+		"koromaru", // 7
+		"fuuka" // 8
 	};
 	
 	private int[] academicsRanks = {
@@ -62,6 +62,15 @@ public class SaveFile {
 		60,
 		80
 	};
+	
+	// index 0 with regular persona, index 1 with ultimate persona
+	int[] junpeiPersonaFlags = {198, 199};
+	int[] yukariPersonaFlags = {192, 193};
+	int[] akihikoPersonaFlags = {202, 203};
+	int[] mitsuruPersonaFlags = {196, 197};
+	int[] kenPersonaFlags = {204, 205};
+	int[] aigisPersonaFlags = {194, 195};
+	int[] fuukaPersonaFlags = {200, 201};
 	
 	// The following are based on separate table of data
 	// Clear whitespace before using, whitespace for easy reading
@@ -232,10 +241,14 @@ public class SaveFile {
 	private HashMap<String, String> indexMap = new HashMap<>();
 	private HashMap<String, String> nameHexToLetter = new HashMap<>();
 	private HashMap<String, String> nameLetterToHex = new HashMap<>();
+	private HashMap<String, Object[][]> loadoutsMap = new HashMap<>();
+	private HashMap<String, int[]> personaCharFlagsMap = new HashMap<>();
 	
 	//TODO get name in String wee
 	public SaveFile (byte[] data) {
 		initIndices();
+		initLoadouts();
+		initPersonaCharFlagsMap();
 		populateLetterHashMaps();
 		byteStream = data;
 		playerLevel = getByteRangeInt(data, indexMap.get("PLAYER_LEVEL_INDEX"), 0, 1);
@@ -334,16 +347,32 @@ public class SaveFile {
 		return this.levelMap;
 	}
 	
-	public void setLevelMap (HashMap<String, Integer> newMap) {
-		this.levelMap = newMap;
+	// person name must be correct
+	// level must be between 1-99 inclusive
+	public void setLevel (String person, int level) {
+		levelMap.replace(person + "Level", level);
+	}
+	
+	public String[] getPartyList () {
+		return partyMember;
 	}
 	
 	public HashMap<String, Integer> getExpMap () {
 		return this.expMap;
 	}
 	
-	public void setExpMap (HashMap<String, Integer> newMap) {
-		this.expMap = newMap;
+	// person name must be correct
+	// exp must be between 0-MAX_EXP inclusive
+	public void setExp (String person, int exp) {
+		expMap.replace(person + "Exp", exp);
+	}
+	
+	public int getMaxLevel () {
+		return MAX_LEVEL;
+	}
+	
+	public int getMaxExp () {
+		return MAX_EXP;
 	}
 	
 	public HashMap<String, String> getSkillMap () {
@@ -359,7 +388,7 @@ public class SaveFile {
 	}
 	
 	// Name **must** be correct
-	public void updateUltFlagMap (String name, Boolean u) {
+	public void updateUltFlagMap (String name, boolean u) {
 		ultFlagMap.replace(name, u);
 	}
 	
@@ -458,7 +487,11 @@ public class SaveFile {
 				b[i * 2 + 1] = 0;
 			} else {
 				letter = name.substring(i, i + 1);
-				letterBytes = hexToBytes(nameLetterToHex.get(letter));
+				if (nameLetterToHex.get(letter) != null) {
+					letterBytes = hexToBytes(nameLetterToHex.get(letter));
+				} else {
+					letterBytes = hexToBytes(nameLetterToHex.get(" "));
+				}
 				b[i * 2] = letterBytes[0];
 				b[i * 2 + 1] = letterBytes[1];
 			}	
@@ -647,6 +680,36 @@ public class SaveFile {
 		}
 	}
 	
+	private void initLoadouts () {
+		loadoutsMap.put("junpei", junpeiLoadouts);
+		loadoutsMap.put("yukari", yukariLoadouts);
+		loadoutsMap.put("akihiko", akihikoLoadouts);
+		loadoutsMap.put("mitsuru", mitsuruLoadouts);
+		loadoutsMap.put("ken", kenLoadouts);
+		loadoutsMap.put("aigis", aigisLoadouts);
+		loadoutsMap.put("shinjiro", shinjiroLoadouts);
+		loadoutsMap.put("koromaru", koromaruLoadouts);
+		loadoutsMap.put("fuuka", fuukaLoadouts);
+	}
+	
+	private void initPersonaCharFlagsMap () {
+		// Junpei 198 (0xC6) vs 199 (0xC7)
+		// Yukari 192 (0xC0) vs 193 (0xC1)
+		// Akihiko 202 (0xCA) vs 203 (0xCB)
+		// Mitsuru 196 (0xC4) vs 197 (0xC5)
+		// Ken 204 (0xCC) vs 205 (0xCD)
+		// Aigis 194 (0xC2) vs 195 (0xC3)
+		// Fuuka 200 (0xC8) vs 201 (0xC9)
+		
+		personaCharFlagsMap.put("junpei", junpeiPersonaFlags);
+		personaCharFlagsMap.put("yukari", yukariPersonaFlags);
+		personaCharFlagsMap.put("akihiko", akihikoPersonaFlags);
+		personaCharFlagsMap.put("mitsuru", mitsuruPersonaFlags);
+		personaCharFlagsMap.put("ken", kenPersonaFlags);
+		personaCharFlagsMap.put("aigis", aigisPersonaFlags);
+		personaCharFlagsMap.put("fuuka", fuukaPersonaFlags);	
+	}
+	
 	// Set every character's (including MC's) level and exp to max. 
 	public void setMax () {
 		playerLevel = MAX_LEVEL;
@@ -685,12 +748,60 @@ public class SaveFile {
 	// Update all character's skills based on their level and ultimate persona status.
 	public void updateCharacterSkills () {
 		int currLevel;
+		boolean isUlt = false;
+		Object[][] charLoadouts;
+		String loadout = "";
 		for (int i = 0; i < partyMember.length; i++) {
 			currLevel = levelMap.get(partyMember[i] + "Level");
-			skillMap.get(partyMember[i] + "Skills");
-			if (i < 6) {
-				
+			charLoadouts = loadoutsMap.get(partyMember[i]);
+			
+			if (i != 6 && i != 7) { // Not Shinjiro or Koromaru, who don't have ult personas
+				isUlt = ultFlagMap.get(partyMember[i]);
+			} 
+			
+			for (int j = charLoadouts.length - 1; j >= 0; j--) {
+				if (currLevel >= (Integer) charLoadouts[j][0]) {
+					if (i == 6 || i == 7) { // No ultimate persona
+						loadout = ((String) charLoadouts[j][1]).replaceAll("\\s+","");
+						break;
+					} else {
+						if ((Boolean) charLoadouts[j][1] && isUlt) {
+							loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","");
+							break;
+						} else if (!(Boolean) charLoadouts[j][1]) {
+							if (i == 0) { // Junpei is special case
+								if (isUlt) {
+									loadout = "5F02" + ((String) charLoadouts[j][2]).replaceAll("\\s+","");
+									break;
+								} else {
+									loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","") + "0000";
+									break;
+								}
+							} else { // Rest of party is simple.
+								loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","");
+								break;	
+							}
+						}
+					}
+				}
 			}
+		skillMap.replace(partyMember[i] + "Skills", loadout);
+		}
+	}
+	
+	public void updatePersonaFlags () {
+		boolean isUlt;
+		int[] currFlags;
+		for (int i = 0; i < partyMember.length; i++) {
+			if (i != 6 && i != 7) {
+				isUlt = ultFlagMap.get(partyMember[i]);
+				currFlags = personaCharFlagsMap.get(partyMember[i]);
+				if (isUlt) {
+					personaFlagMap.replace(partyMember[i], currFlags[1]);
+				} else {
+					personaFlagMap.replace(partyMember[i], currFlags[0]);
+				}
+			}		
 		}
 		
 	}
