@@ -128,7 +128,12 @@ public class SaveFile {
 
 			currMember.setCurrentSkills(skills);
 			
-			// TODO: set stats
+			// Double check these indices are correct
+			currMember.initAttributes(getByteRangeInt(data, indexMap.get(index), 26, 1),
+									  getByteRangeInt(data, indexMap.get(index), 27, 1),
+									  getByteRangeInt(data, indexMap.get(index), 28, 1),
+									  getByteRangeInt(data, indexMap.get(index), 29, 1),
+									  getByteRangeInt(data, indexMap.get(index), 30, 1));
 		}
 		
 		statMap.put("academics", getByteRangeInt(data, indexMap.get("STAT_ACADEMICS_INDEX"), 0, 2));
@@ -341,6 +346,7 @@ public class SaveFile {
 		for (int i = 0; i < partyMember.length; i++) {
 			index = "BLOCK_" + partyMember[i].toUpperCase() + "_INDEX";
 			PartyMember currMember = partyMemberMap.get(partyMember[i]);
+			CharacterAttributes currAttributes = currMember.getAttributes();
 			level = currMember.getLevel();
 			exp = currMember.getExp();
 			skills = currMember.getCurrentSkills();
@@ -358,7 +364,11 @@ public class SaveFile {
 			updateByteArray(intToBytes(exp, 4), indexMap.get(index), 6);
 			updateByteArray(hexToBytes(skills), indexMap.get(index), 10);
 			
-			// TODO: Write stats
+			updateByteArray(intToBytes(currAttributes.getStrength(), 1), indexMap.get(index), 26);
+			updateByteArray(intToBytes(currAttributes.getMagic(), 1), indexMap.get(index), 27);
+			updateByteArray(intToBytes(currAttributes.getEndurance(), 1), indexMap.get(index), 28);
+			updateByteArray(intToBytes(currAttributes.getAgility(), 1), indexMap.get(index), 29);
+			updateByteArray(intToBytes(currAttributes.getLuck(), 1), indexMap.get(index), 30);
 		}
 		
 		

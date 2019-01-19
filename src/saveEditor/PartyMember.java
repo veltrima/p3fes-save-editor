@@ -1,6 +1,7 @@
 package saveEditor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PartyMember {
 	// The following are based on separate table of data
@@ -206,7 +207,9 @@ public class PartyMember {
 	private int exp;
 	private int personaFlag;
 	private CharacterAttributes attributes;
-	ArrayList<Loadout> loadouts = new ArrayList<Loadout>();
+	private HashMap<String, Object[][]> loadoutMap = new HashMap<>(); // Used to populate loadout array list
+	private HashMap<String, int[][]> attributesMap = new HashMap<>(); // Used to make updating attributes simpler
+	private ArrayList<Loadout> loadouts = new ArrayList<Loadout>();
 	private boolean hasUlt;
 	
 	public PartyMember (String characterName) {
@@ -253,12 +256,46 @@ public class PartyMember {
 		hasUlt = ultStatus;
 	}
 	
+	public void initAttributes(int strength, int magic, int endurance, int agility, int luck) {
+		attributes = new CharacterAttributes(strength, magic, endurance, agility, luck);
+	}
 	public CharacterAttributes getAttributes() {
 		return attributes;
 	}
 	// Use player level to calculate attributes
 	public void updateAttributes() {
-		// TODO
+		// Format {min stats, max stats}
+		// Stats format: level, strength, magic, endurance, agility, luck
+		if (!name.equals("fuuka")) { // Fuuka's attributes are constant
+			int[][] referenceAttributes = attributesMap.get(name);
+			if (level <= referenceAttributes[0][0]) {
+				attributes.setStrength(referenceAttributes[0][1]);
+				attributes.setMagic(referenceAttributes[0][2]);
+				attributes.setEndurance(referenceAttributes[0][3]);
+				attributes.setAgility(referenceAttributes[0][4]);
+				attributes.setLuck(referenceAttributes[0][5]);
+			} else if (level >= referenceAttributes[1][0]) {
+				attributes.setStrength(referenceAttributes[1][1]);
+				attributes.setMagic(referenceAttributes[1][2]);
+				attributes.setEndurance(referenceAttributes[1][3]);
+				attributes.setAgility(referenceAttributes[1][4]);
+				attributes.setLuck(referenceAttributes[1][5]);
+			} else {
+				int levelDiff = referenceAttributes[1][0] - referenceAttributes[0][0];
+				int pointLevels = level - referenceAttributes[0][0]; // Point earning levels
+				float strengthPerLevel = (referenceAttributes[1][1] - referenceAttributes[0][1]) / levelDiff;
+				float magicPerLevel = (referenceAttributes[1][2] - referenceAttributes[0][2]) / levelDiff;
+				float endurancePerLevel = (referenceAttributes[1][3] - referenceAttributes[0][3]) / levelDiff;
+				float agilityPerLevel = (referenceAttributes[1][4] - referenceAttributes[0][4]) / levelDiff;
+				float luckPerLevel = (referenceAttributes[1][5] - referenceAttributes[0][5]) / levelDiff;
+				
+				attributes.setStrength(referenceAttributes[0][1] + Math.round(pointLevels * strengthPerLevel));
+				attributes.setMagic(referenceAttributes[0][2] + Math.round(pointLevels * magicPerLevel));
+				attributes.setEndurance(referenceAttributes[0][3] + Math.round(pointLevels * endurancePerLevel));
+				attributes.setAgility(referenceAttributes[0][4] + Math.round(pointLevels * agilityPerLevel));
+				attributes.setLuck(referenceAttributes[0][5] + Math.round(pointLevels * luckPerLevel)); 
+			}
+		}
 	}
 	
 	// Update current skills based on current level and ult status
@@ -288,74 +325,40 @@ public class PartyMember {
 		}
 	}
 	
+	// To make initLoadouts() cleaner.
+	private void initLoadoutMap () {
+		loadoutMap.put("junpei", junpeiLoadouts);
+		loadoutMap.put("yukari", yukariLoadouts);
+		loadoutMap.put("akihiko", akihikoLoadouts);
+		loadoutMap.put("mitsuru", mitsuruLoadouts);
+		loadoutMap.put("ken", kenLoadouts);
+		loadoutMap.put("koromaru", koromaruLoadouts);
+		loadoutMap.put("shinjiro", shinjiroLoadouts);
+		loadoutMap.put("aigis", aigisLoadouts);
+		loadoutMap.put("fuuka", fuukaLoadouts);
+	}
+	
+	// To make updateAttribute() cleaner
+	private void initAttributeMap () {
+		attributesMap.put("junpei", junpeiAttributes);
+		attributesMap.put("yukari", yukariAttributes);
+		attributesMap.put("akihiko", akihikoAttributes);
+		attributesMap.put("mitsuru", mitsuruAttributes);
+		attributesMap.put("ken", kenAttributes);
+		attributesMap.put("koromaru", koromaruAttributes);
+		attributesMap.put("shinjiro", shinjiroAttributes);
+		attributesMap.put("aigis", aigisAttributes);
+		// Fuuka attributes not needed
+	}
+		
 	// Initialize the loadout lists for each character.
-	// TODO: Too much repeated code, clean this up.
 	private void initLoadouts() {
-		if (name.equals("junpei")) {
-			for (int i = 0; i < junpeiLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) junpeiLoadouts[i][0], 
-										(Boolean) junpeiLoadouts[i][1], 
-										(String) junpeiLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("yukari")) {
-			for (int i = 0; i < yukariLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) yukariLoadouts[i][0], 
-										(Boolean) yukariLoadouts[i][1], 
-										(String) yukariLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("mitsuru")) {
-			for (int i = 0; i < mitsuruLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) mitsuruLoadouts[i][0], 
-										(Boolean) mitsuruLoadouts[i][1], 
-										(String) mitsuruLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("akihiko")) {
-			for (int i = 0; i < akihikoLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) akihikoLoadouts[i][0], 
-										(Boolean) akihikoLoadouts[i][1], 
-										(String) akihikoLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("koromaru")) {
-			for (int i = 0; i < koromaruLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) koromaruLoadouts[i][0], 
-										(Boolean) koromaruLoadouts[i][1], 
-										(String) koromaruLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("ken")) {
-			for (int i = 0; i < kenLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) kenLoadouts[i][0], 
-										(Boolean) kenLoadouts[i][1], 
-										(String) kenLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("shinjiro")) {
-			for (int i = 0; i < shinjiroLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) shinjiroLoadouts[i][0], 
-										(Boolean) shinjiroLoadouts[i][1], 
-										(String) shinjiroLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("aigis")) {
-			for (int i = 0; i < yukariLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) aigisLoadouts[i][0], 
-										(Boolean) aigisLoadouts[i][1], 
-										(String) aigisLoadouts[i][2]);
-				loadouts.add(l);
-			}
-		} else if (name.equals("fuuka")) {
-			for (int i = 0; i < yukariLoadouts.length; i++) {
-				Loadout l = new Loadout((Integer) fuukaLoadouts[i][0], 
-										(Boolean) fuukaLoadouts[i][1], 
-										(String) fuukaLoadouts[i][2]);
-				loadouts.add(l);
-			}
+		Object[][] loadoutList = loadoutMap.get(name);
+		for (int i = 0; i < loadoutList.length; i++) {
+			Loadout currLoadout = new Loadout((Integer) loadoutList[i][0], 
+											  (Boolean) loadoutList[i][1], 
+											  (String) loadoutList[i][2]);
+			loadouts.add(currLoadout);
 		}
-		
-		
 	}
 }
