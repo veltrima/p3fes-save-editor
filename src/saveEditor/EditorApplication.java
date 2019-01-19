@@ -512,9 +512,7 @@ public class EditorApplication {
 	}
 	
 	private void repopFields() {
-		HashMap<String, Integer> levelMap = currentSave.getLevelMap();
-		HashMap<String, Integer> expMap = currentSave.getExpMap();
-		HashMap<String, Boolean> ultFlagMap = currentSave.getUltFlagMap();
+		HashMap<String, PartyMember> PartyMemberMap = currentSave.getPartyMemberMap();
 		
 		txtFirstName.setText(currentSave.getPlayerFirstName());
 		txtLastName.setText(currentSave.getPlayerLastName());
@@ -522,33 +520,33 @@ public class EditorApplication {
 		txtMclevel.setText(Integer.toString(currentSave.getPlayerLevel()));
 		txtMcexp.setText(Integer.toString(currentSave.getPlayerExp()));
 		
-		txtJlevel.setText(Integer.toString(levelMap.get("junpeiLevel")));
-		txtYlevel.setText(Integer.toString(levelMap.get("yukariLevel")));
-		txtAlevel.setText(Integer.toString(levelMap.get("akihikoLevel")));
-		txtMlevel.setText(Integer.toString(levelMap.get("mitsuruLevel")));
-		txtFlevel.setText(Integer.toString(levelMap.get("fuukaLevel"))); 
-		txtAilevel.setText(Integer.toString(levelMap.get("aigisLevel")));
-		txtKlevel.setText(Integer.toString(levelMap.get("kenLevel")));
-		txtKolevel.setText(Integer.toString(levelMap.get("koromaruLevel")));
-		txtSlevel.setText(Integer.toString(levelMap.get("shinjiroLevel"))); 
+		txtJlevel.setText(Integer.toString(PartyMemberMap.get("junpei").getLevel()));
+		txtYlevel.setText(Integer.toString(PartyMemberMap.get("yukari").getLevel()));
+		txtAlevel.setText(Integer.toString(PartyMemberMap.get("akihiko").getLevel()));
+		txtMlevel.setText(Integer.toString(PartyMemberMap.get("mitsuru").getLevel()));
+		txtFlevel.setText(Integer.toString(PartyMemberMap.get("fuuka").getLevel())); 
+		txtAilevel.setText(Integer.toString(PartyMemberMap.get("aigis").getLevel()));
+		txtKlevel.setText(Integer.toString(PartyMemberMap.get("ken").getLevel()));
+		txtKolevel.setText(Integer.toString(PartyMemberMap.get("koromaru").getLevel()));
+		txtSlevel.setText(Integer.toString(PartyMemberMap.get("shinjiro").getLevel())); 
 		
-		txtJexp.setText(Integer.toString(expMap.get("junpeiExp")));
-		txtYexp.setText(Integer.toString(expMap.get("yukariExp")));
-		txtAexp.setText(Integer.toString(expMap.get("akihikoExp")));
-		txtMexp.setText(Integer.toString(expMap.get("mitsuruExp")));
-		txtFexp.setText(Integer.toString(expMap.get("fuukaExp"))); 
-		txtAiexp.setText(Integer.toString(expMap.get("aigisExp")));
-		txtKexp.setText(Integer.toString(expMap.get("kenExp")));
-		txtKoexp.setText(Integer.toString(expMap.get("koromaruExp")));
-		txtSexp.setText(Integer.toString(expMap.get("shinjiroExp"))); 
+		txtJexp.setText(Integer.toString(PartyMemberMap.get("junpei").getExp()));
+		txtYexp.setText(Integer.toString(PartyMemberMap.get("yukari").getExp()));
+		txtAexp.setText(Integer.toString(PartyMemberMap.get("akihiko").getExp()));
+		txtMexp.setText(Integer.toString(PartyMemberMap.get("mitsuru").getExp()));
+		txtFexp.setText(Integer.toString(PartyMemberMap.get("fuuka").getExp())); 
+		txtAiexp.setText(Integer.toString(PartyMemberMap.get("aigis").getExp()));
+		txtKexp.setText(Integer.toString(PartyMemberMap.get("ken").getExp()));
+		txtKoexp.setText(Integer.toString(PartyMemberMap.get("koromaru").getExp()));
+		txtSexp.setText(Integer.toString(PartyMemberMap.get("shinjiro").getExp())); 
 		
-		checkJult.setSelected(ultFlagMap.get("junpei"));
-		checkYult.setSelected(ultFlagMap.get("yukari"));
-		checkAult.setSelected(ultFlagMap.get("akihiko"));
-		checkMult.setSelected(ultFlagMap.get("mitsuru"));
-		checkFult.setSelected(ultFlagMap.get("fuuka"));
-		checkKult.setSelected(ultFlagMap.get("ken"));
-		checkAiult.setSelected(ultFlagMap.get("aigis"));
+		checkJult.setSelected(PartyMemberMap.get("junpei").getHasUlt());
+		checkYult.setSelected(PartyMemberMap.get("yukari").getHasUlt());
+		checkAult.setSelected(PartyMemberMap.get("akihiko").getHasUlt());
+		checkMult.setSelected(PartyMemberMap.get("mitsuru").getHasUlt());
+		checkFult.setSelected(PartyMemberMap.get("fuuka").getHasUlt());
+		checkKult.setSelected(PartyMemberMap.get("ken").getHasUlt());
+		checkAiult.setSelected(PartyMemberMap.get("aigis").getHasUlt());
 		
 		spinnerAca.setValue(currentSave.getAcademicsLevel());
 		spinnerCha.setValue(currentSave.getCharmLevel());
@@ -636,6 +634,7 @@ public class EditorApplication {
 		updatePartyLevelAndExp(currParty, currLevel, currExp);
 		
 		currentSave.updateCharacterSkills();
+		currentSave.updatePartyAttributes();
 		
 		currentSave.updateUltFlagMap("junpei", checkJult.isSelected());
 		currentSave.updateUltFlagMap("yukari", checkYult.isSelected());
@@ -726,19 +725,20 @@ public class EditorApplication {
 	
 	// Assumes scrubbed level and exp.
 	private void updatePartyLevelAndExp (String name, int level, int exp) {
-		HashMap<String, Integer> levelMap = currentSave.getLevelMap();
-		HashMap<String, Integer> expMap = currentSave.getExpMap();
-		
-		int prevLevel = levelMap.get(name + "Level");
-		int prevExp = expMap.get(name + "Exp");
-		
 		if (currentSave != null) {
-			if (prevLevel != level) {
-				currentSave.setLevel(name, level);
-				currentSave.setExp(name, currentSave.expForLevel(level));
-			} else if (prevExp != exp) {
-				currentSave.setExp(name, exp);
-				currentSave.setLevel(name, currentSave.levelForExp(exp));
+			HashMap<String, PartyMember> partyMemberMap = currentSave.getPartyMemberMap();
+			
+			int prevLevel = partyMemberMap.get(name).getLevel();
+			int prevExp = partyMemberMap.get(name).getExp();
+			
+			if (currentSave != null) {
+				if (prevLevel != level) {
+					partyMemberMap.get(name).setLevel(level);
+					partyMemberMap.get(name).setExp(currentSave.expForLevel(level));
+				} else if (prevExp != exp) {
+					currentSave.setExp(name, exp);
+					partyMemberMap.get(name).setLevel(currentSave.levelForExp(exp));
+				}
 			}
 		}
 	}

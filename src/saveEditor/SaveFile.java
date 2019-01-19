@@ -71,183 +71,17 @@ public class SaveFile {
 	int[] kenPersonaFlags = {204, 205};
 	int[] aigisPersonaFlags = {194, 195};
 	int[] fuukaPersonaFlags = {200, 201};
-	
-	// The following are based on separate table of data
-	// Clear whitespace before using, whitespace for easy reading
-	// If ultimate up to 58, begin with Spring of Life (5F02)
-	// Else, end with 0000
-	// Format: int level, bool ult persona, string skills
-	private Object[][] junpeiLoadouts = {
-		{1, false, "7900 0000 0000 0000 0000 0000 0000"}, // 1
-		{5, false, "7900 0100 0000 0000 0000 0000 0000"}, // 5
-		{7, false, "7900 0100 C900 0000 0000 0000 0000"}, // 7
-		{9, false, "7900 0100 C900 DA00 0000 0000 0000"}, // 9
-		{18, false, "7900 0100 C900 DA00 7100 0000 0000"}, // 18
-		{20, false, "7900 0100 C900 DA00 7100 7E00 0000"}, // 20
-		{25, false, "7900 0100 C900 DA00 7E00 7200 0000"}, // 25
-		{32, false, "7900 C900 DA00 7E00 7200 0200 0000"}, // 32
-		{35, false, "7900 C900 DA00 7E00 7200 0200 2002"}, // 35
-		{40, false, "7900 C900 DA00 7200 0200 2002 8C00"}, // 40
-		{44, false, "7900 C900 7200 0200 2002 8C00 DB00"}, // 44
-		{45, false, "7900 C900 7200 0200 8C00 DB00 2102"}, // 45
-		{50, false, "C900 7200 0200 8C00 DB00 2102 7F00"}, // 50
-		{55, false, "C900 0200 8C00 DB00 2102 7F00 7600"}, // 55
-		{58, true, "5F02 C900 0200 8C00 DB00 7F00 7600 2202"}, // 58 Ultimate
-		{60, true, "5F02 0200 8C00 DB00 7F00 7600 2202 E500"}, // 60 U
-		{64, true, "5F02 8C00 DB00 7F00 7600 2202 E500 0300"}, // 64 U
-		{70, true, "5F02 8C00 DB00 7600 2202 E500 0300 8600"}, // 70 U
-		{75, true, "5F02 8C00 DB00 7600 2202 E500 0300 9000"} // 75 U
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] yukariLoadouts = {
-		{1, false, "C000 0000 0000 0000 0000 0000 0000 0000"}, // 1
-		{5, false, "C000 C700 0000 0000 0000 0000 0000 0000"}, // 5
-		{16, false, "C000 C700 0A00 0000 0000 0000 0000 0000"}, // 16
-		{21, false, "C000 C700 0A00 ED00 0000 0000 0000 0000"}, // 21
-		{22, false, "C700 0A00 ED00 0D00 C100 0000 0000 0000"}, // 22
-		{25, false, "C700 0A00 ED00 0D00 C100 CC00 0000 0000"}, // 25
-		{28, false, "C700 ED00 0D00 C100 CC00 0B00 0000 0000"}, // 28
-		{32, false, "ED00 0D00 C100 CC00 0B00 C800 0000 0000"}, // 32
-		{36, false, "ED00 0D00 C100 CC00 0B00 C800 C400 0000"}, // 36
-		{43, false, "ED00 C100 CC00 0B00 C800 C400 0E00 0000"}, // 43
-		{46, false, "ED00 CC00 0B00 C800 C400 0E00 C200 0000"}, // 46
-		{52, true, "ED00 CC00 C800 C400 0E00 C200 0C00 0000"}, // 52 U
-		{57, true, "ED00 CC00 C800 C400 0E00 C200 0C00 E700"}, // 57 U
-		{65, true, "ED00 CC00 C800 C400 C200 0C00 E700 0F00"}, // 65 U
-		{68, true, "ED00 C800 C400 C200 0C00 E700 0F00 CD00"}, // 68 U
-		{74, true, "ED00 C800 C200 0C00 E700 0F00 CD00 C500"}  // 74 U
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] mitsuruLoadouts = {
-		{1, false, "1300 1600 C000 3900 0000 0000 0000 0000"}, // 1
-		{21, false, "1600 C000 3900 1400 0000 0000 0000 0000"}, // 21	
-		{25, false, "1600 3900 1400 C100 0000 0000 0000 0000"}, // 25
-		{27, false, "1600 3900 1400 C100 4C00 0000 0000 0000"}, // 27
-		{32, false, "1600 3900 1400 C100 4C00 3E00 0000 0000"}, // 32
-		{42, false, "3900 1400 C100 4C00 3E00 1700 0000 0000"}, // 42
-		{45, false, "3900 1400 C100 4C00 3E00 1700 1202 0000"}, // 45
-		{50, false, "3900 1400 C100 4C00 3E00 1700 1202 DD00"}, // 50
-		{55, false, "3900 C100 4C00 3E00 1700 1202 DD00 1500"}, // 55
-		{58, true, "3900 4C00 3E00 1700 1202 DD00 1500 C200"}, // 58 U
-		{61, true, "4C00 3E00 1700 1202 DD00 1500 C200 E600"}, // 61 U
-		{71, true, "4C00 3E00 1202 DD00 1500 C200 E600 1800"}, // 71 U
-		{76, true, "4C00 3E00 DD00 1500 C200 E600 1800 1302"}  // 76 U
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] akihikoLoadouts = {
-		{1, false, "7400 1C00 C000 0000 0000 0000 0000 0000"}, // 1
-		{16, false, "7400 1C00 C000 CE00 0000 0000 0000 0000"}, // 16
-		{21, false, "7400 1C00 C000 CE00 1F00 0000 0000 0000"}, // 21
-		{25, false, "7400 1C00 C000 CE00 1F00 D200 0000 0000"}, // 25
-		{29, false, "7400 C000 CE00 1F00 D200 1D00 0000 0000"}, // 29
-		{33, false, "7400 C000 CE00 1F00 D200 1D00 D000 0000"}, // 33
-		{37, false, "7400 C000 CE00 1F00 D200 1D00 D000 1402"}, // 37
-		{38, false, "7400 CE00 1F00 D200 1D00 D000 1402 C100"}, // 38
-		{41, false, "7400 CE00 D200 1D00 D000 1402 C100 2000"}, // 41
-		{47, true, "7400 D200 1D00 D000 1402 C100 2000 CF00"}, // 47 U
-		{50, true, "D200 1D00 D000 1402 C100 2000 CF00 4A02"}, // 50 U
-		{54, true, "D200 D000 1402 C100 2000 CF00 4A02 1E00"}, // 54 U
-		{57, true, "D000 1402 C100 2000 CF00 4A02 1E00 D300"}, // 57 U
-		{65, true, "D000 1402 2000 CF00 4A02 1E00 D300 C200"}, // 65 U
-		{66, true, "1402 2000 CF00 4A02 1E00 D300 C200 D100"}, // 66 U
-		{74, true, "1402 CF00 4A02 1E00 D300 C200 D100 2100"}, // 74 U
-		{76, true, "CF00 4A02 1E00 D300 C200 D100 2100 1502"}  // 76 U 
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] kenLoadouts = {
-		{1, false, "2D00 9200 1D00 0000 0000 0000 0000 0000"}, // 1
-		{37, false, "2D00 9200 1D00 C100 0000 0000 0000 0000"}, // 37
-		{41, false, "9200 1D00 C100 2F00 0000 0000 0000 0000"}, // 41
-		{42, false, "9200 1D00 C100 2F00 CC00 0000 0000 0000"}, // 42
-		{51, true, "9200 1D00 C100 2F00 CC00 C400 0000 0000"}, // 51 U
-		{54, true, "9200 1D00 C100 2F00 CC00 C400 5702 0000"}, // 54 U
-		{55, true, "9200 C100 2F00 CC00 C400 5702 1E00 0000"}, // 55 U
-		{59, true, "C100 2F00 CC00 C400 5702 1E00 9300 0000"}, // 59 U
-		{62, true, "2F00 CC00 C400 5702 1E00 9300 C200 0000"}, // 62 U
-		{65, true, "2F00 CC00 C400 5702 1E00 9300 C200 4602"}, // 65 U
-		{73, true, "2F00 C400 5702 1E00 9300 C200 4602 CD00"}, // 73 U
-		{78, true, "2F00 5702 1E00 9300 C200 4602 CD00 C500"}  // 78 U
-	};
-	
-	// Format: int level, string skills
-	private Object[][] koromaruLoadouts = {
-		{1, "0200 3300 D800 0000 0000 0000 0000 0000"}, // 1
-		{38, "0200 3300 D800 0500 0000 0000 0000 0000"}, // 38
-		{40, "0200 3300 D800 0500 2102 0000 0000 0000"}, // 40
-		{42, "0200 3300 D800 0500 2102 3400 0000 0000"}, // 42
-		{45, "3300 D800 0500 2102 3400 0300 0000 0000"}, // 45
-		{48, "3300 D800 0500 2102 3400 0300 1002 0000"}, // 48
-		{50, "3300 0500 2102 3400 0300 1002 D900 0000"}, // 50
-		{52, "3300 0500 3400 0300 1002 D900 2202 0000"}, // 52
-		{56, "0500 3400 0300 1002 D900 2202 3500 0000"}, // 56
-		{60, "0500 3400 0300 1002 D900 2202 3500 E500"}, // 60
-		{67, "3400 0300 1002 D900 2202 3500 E500 0600"}, // 67
-		{71, "0300 1002 D900 2202 3500 E500 0600 3600"}, // 71
-		{77, "0300 D900 2202 3500 E500 0600 3600 1102"}  // 77
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] aigisLoadouts = {
-		{1, false, "7200 7300 D800 0000 0000 0000 0000 0000"}, // 1
-		{32, false, "7200 7300 D800 DA00 0000 0000 0000 0000"}, // 32
-		{35, false, "7200 7300 D800 DA00 7A00 0000 0000 0000"}, // 35
-		{36, false, "7200 7300 D800 DA00 7A00 D600 0000 0000"}, // 36
-		{42, false, "7200 7300 D800 DA00 7A00 D600 D400 0000"}, // 42
-		{47, false, "7200 7300 DA00 7A00 D600 D400 D900 0000"}, // 47
-		{51, false, "7200 DA00 7A00 D600 D400 D900 7500 0000"}, // 51
-		{56, false, "7200 7A00 D600 D400 D900 7500 DB00 0000"}, // 56
-		{59, false, "7200 7A00 D600 D400 D900 7500 DB00 C200"}, // 59
-		{60, false, "7200 7A00 D400 D900 7500 DB00 C200 D700"}, // 60
-		{65, true, "7A00 D400 D900 7500 DB00 C200 D700 CD00"}, // 65 U
-		{73, true, "7A00 D400 D900 DB00 C200 D700 CD00 7700"}, // 73 U
-		{77, true, "D400 D900 DB00 C200 D700 CD00 7700 7800"}  // 77 U
-	};
-	
-	// Format: int level, string skills
-	private Object[][] shinjiroLoadouts = {
-		{1, "2302 2002 7A00 0000 0000 0000 0000 0000"}, // 1
-		{39, "2302 2002 7A00 4000 0000 0000 0000 0000"}, // 39
-		{42, "2302 7A00 4000 2102 0000 0000 0000 0000"}, // 42
-		{50, "2302 7A00 4000 2102 DC00 0000 0000 0000"}, // 50
-		{52, "2302 7A00 4000 2102 DC00 7F00 0000 0000"}, // 52
-		{53, "2302 7A00 4000 2102 DC00 7F00 7500 0000"}, // 53
-		{55, "2302 7A00 4000 DC00 7F00 7500 2202 0000"}, // 55
-		{60, "2302 7A00 4000 DC00 7500 2202 8000 0000"}, // 60
-		{65, "7A00 4000 DC00 7500 2202 8000 2402 0000"}, // 65
-		{72, "7A00 4000 DC00 2202 8000 2402 7700 0000"}, // 72
-		{77, "7A00 4000 DC00 2202 8000 2402 7700 7800"}  // 77
-	};
-	
-	// Format: int level, bool ult persona, string skills
-	private Object[][] fuukaLoadouts = {
-		{1, false, "4601 0000 0000 0000 0000 0000 0000 0000"}, // 1
-		{23, false, "4601 4F01 0000 0000 0000 0000 0000 0000"}, // 23
-		{32, false, "4601 4F01 5001 0000 0000 0000 0000 0000"}, // 32
-		{41, false, "4601 4F01 5001 5401 0000 0000 0000 0000"}, // 41
-		{50, true, "4601 4F01 5001 5401 4501 0000 0000 0000"}, // 50 U
-		{72, true, "4601 4F01 5001 5401 4501 5301 0000 0000"}  // 72 U
-	};
-	
-	private HashMap<String, Integer> levelMap = new HashMap<>(); 
-	private HashMap<String, Integer> expMap = new HashMap<>(); 
-	private HashMap<String, String> skillMap = new HashMap<>();
+
+	private HashMap<String, PartyMember> partyMemberMap = new HashMap<>();
+	private HashMap<String, int[]> personaCharFlagsMap = new HashMap<>();
 	private HashMap<String, Integer> statMap = new HashMap<>();
-	private HashMap<String, Boolean> ultFlagMap = new HashMap<>(); // 30 vs 00
-	private HashMap<String, Integer> personaFlagMap = new HashMap<>(); 
 	private HashMap<String, String> indexMap = new HashMap<>();
 	private HashMap<String, String> nameHexToLetter = new HashMap<>();
 	private HashMap<String, String> nameLetterToHex = new HashMap<>();
-	private HashMap<String, Object[][]> loadoutsMap = new HashMap<>();
-	private HashMap<String, int[]> personaCharFlagsMap = new HashMap<>();
 	
-	//TODO get name in String wee
 	public SaveFile (byte[] data) {
 		initIndices();
-		initLoadouts();
+		initPartyMemberMap();
 		initPersonaCharFlagsMap();
 		populateLetterHashMaps();
 		byteStream = data;
@@ -259,47 +93,42 @@ public class SaveFile {
 		
 		for (int i = 0; i < partyMember.length; i++) {
 			String index = "BLOCK_" + partyMember[i].toUpperCase() + "_INDEX";
-			
-			//if (partyMember[i] == "koromaru" || partyMember[i] == "fuuka" || partyMember[i] == "shinjiro") {
-			//	levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 0, 4) - 7680);
-			//} else {
-			//	levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 0, 4));
-			//}
+			PartyMember currMember = partyMemberMap.get(partyMember[i]);
 			
 			if (i < 6) { // Not Shinjiro, Koromaru, or Fuuka, because their structure is different
-				int f = getByteRangeInt(data, indexMap.get(index), 3, 1);
-				if (f == 0) {
-					ultFlagMap.put(partyMember[i], false);
-				} else if (f == 30) {
-					ultFlagMap.put(partyMember[i], true);
+				int ultFlag = getByteRangeInt(data, indexMap.get(index), 3, 1);
+				if (ultFlag == 0) {
+					currMember.setHasUlt(false);
+				} else if (ultFlag == 30) {
+					currMember.setHasUlt(true);
 				} else {
-					ultFlagMap.put(partyMember[i], null); // ERROR
 					System.out.println("Oops");
 				}
 			} else if (i == 8) { // For Fuuka, only use personaFlagMap. If val == 201 (0xC9), yes. If val == 200 (0xC8), no.
-				int f = getByteRangeInt(data, indexMap.get(index), 0, 1);
-				if (f == 200) {
-					ultFlagMap.put(partyMember[i], false);
-				} else if (f == 201) {
-					ultFlagMap.put(partyMember[i], true);
+				int ultFlag = getByteRangeInt(data, indexMap.get(index), 0, 1);
+				if (ultFlag == 200) {
+					currMember.setHasUlt(false);
+				} else if (ultFlag == 201) {
+					currMember.setHasUlt(true);
 				} else {
-					ultFlagMap.put(partyMember[i], null); // ERROR
 					System.out.println("Oops");
 				}
+			} else {
+				currMember.setHasUlt(false);
 			}
 			
-			personaFlagMap.put(partyMember[i], getByteRangeInt(data, indexMap.get(index), 0, 1));
-			levelMap.put(partyMember[i] + "Level", getByteRangeInt(data, indexMap.get(index), 2, 1));
-			expMap.put(partyMember[i] + "Exp", getByteRangeInt(data, indexMap.get(index), 6, 4));
+			currMember.setLevel(getByteRangeInt(data, indexMap.get(index), 2, 1));
+			currMember.setExp(getByteRangeInt(data, indexMap.get(index), 6, 4));
+			currMember.setPersonaFlag(getByteRangeInt(data, indexMap.get(index), 0, 1));
 			
 			String skills = getByteRangeString(data, indexMap.get(index), 10, 2);
 			for (int j = 2; j < 16; j += 2) {
 				skills += getByteRangeString(data, indexMap.get(index), 10 + j, 2);
 			}
 
-			skillMap.put(partyMember[i] + "Skills", skills);
-			System.out.println(skills);
+			currMember.setCurrentSkills(skills);
 			
+			// TODO: set stats
 		}
 		
 		statMap.put("academics", getByteRangeInt(data, indexMap.get("STAT_ACADEMICS_INDEX"), 0, 2));
@@ -331,40 +160,36 @@ public class SaveFile {
 		return this.playerFirstName;
 	}
 	
-	public void setPlayerFirstName (String s) {
-		this.playerFirstName = s;
+	public void setPlayerFirstName (String firstName) {
+		this.playerFirstName = firstName;
 	}
 	
 	public String getPlayerLastName () {
 		return this.playerLastName;
 	}
 	
-	public void setPlayerLastName (String s) {
-		this.playerLastName = s;
-	}
-	
-	public HashMap<String, Integer> getLevelMap () {
-		return this.levelMap;
-	}
-	
-	// person name must be correct
-	// level must be between 1-99 inclusive
-	public void setLevel (String person, int level) {
-		levelMap.replace(person + "Level", level);
+	public void setPlayerLastName (String lastName) {
+		this.playerLastName = lastName;
 	}
 	
 	public String[] getPartyList () {
 		return partyMember;
 	}
 	
-	public HashMap<String, Integer> getExpMap () {
-		return this.expMap;
+	public HashMap<String, PartyMember> getPartyMemberMap () {
+		return partyMemberMap;
+	}
+	
+	// person name must be correct
+	// level must be between 1-99 inclusive
+	public void setLevel (String person, int level) {
+		partyMemberMap.get(person).setLevel(level);
 	}
 	
 	// person name must be correct
 	// exp must be between 0-MAX_EXP inclusive
 	public void setExp (String person, int exp) {
-		expMap.replace(person + "Exp", exp);
+		partyMemberMap.get(person).setExp(exp);
 	}
 	
 	public int getMaxLevel () {
@@ -375,21 +200,9 @@ public class SaveFile {
 		return MAX_EXP;
 	}
 	
-	public HashMap<String, String> getSkillMap () {
-		return this.skillMap;
-	}
-	
-	public void setSkillMap (HashMap<String, String> newMap) {
-		this.skillMap = newMap;
-	}
-	
-	public HashMap<String, Boolean> getUltFlagMap () {
-		return this.ultFlagMap;
-	}
-	
 	// Name **must** be correct
-	public void updateUltFlagMap (String name, boolean u) {
-		ultFlagMap.replace(name, u);
+	public void updateUltFlagMap (String person, boolean flag) {
+		partyMemberMap.get(person).setHasUlt(flag);
 	}
 	
 	public int getAcademicsLevel () {
@@ -527,22 +340,25 @@ public class SaveFile {
 		
 		for (int i = 0; i < partyMember.length; i++) {
 			index = "BLOCK_" + partyMember[i].toUpperCase() + "_INDEX";
-			level = levelMap.get(partyMember[i] + "Level");
-			exp = expMap.get(partyMember[i] + "Exp");
-			skills = skillMap.get(partyMember[i] + "Skills");
+			PartyMember currMember = partyMemberMap.get(partyMember[i]);
+			level = currMember.getLevel();
+			exp = currMember.getExp();
+			skills = currMember.getCurrentSkills();
 			
 			if (i < 6) { // Not Shinjiro, Koromaru, or Fuuka, because their structure is different
-				if (!ultFlagMap.get(partyMember[i])) {
+				if (!currMember.getHasUlt()) {
 					updateByteArray(intToBytes(0, 1), indexMap.get(index), 3);
 				} else {
 					updateByteArray(intToBytes(30, 1), indexMap.get(index), 3);
 				}
 			} 
 			
-			updateByteArray(intToBytes(personaFlagMap.get(partyMember[i]), 1), indexMap.get(index), 0);
+			updateByteArray(intToBytes(currMember.getPersonaFlag(), 1), indexMap.get(index), 0);
 			updateByteArray(intToBytes(level, 1), indexMap.get(index), 2);
 			updateByteArray(intToBytes(exp, 4), indexMap.get(index), 6);
 			updateByteArray(hexToBytes(skills), indexMap.get(index), 10);
+			
+			// TODO: Write stats
 		}
 		
 		
@@ -680,18 +496,6 @@ public class SaveFile {
 		}
 	}
 	
-	private void initLoadouts () {
-		loadoutsMap.put("junpei", junpeiLoadouts);
-		loadoutsMap.put("yukari", yukariLoadouts);
-		loadoutsMap.put("akihiko", akihikoLoadouts);
-		loadoutsMap.put("mitsuru", mitsuruLoadouts);
-		loadoutsMap.put("ken", kenLoadouts);
-		loadoutsMap.put("aigis", aigisLoadouts);
-		loadoutsMap.put("shinjiro", shinjiroLoadouts);
-		loadoutsMap.put("koromaru", koromaruLoadouts);
-		loadoutsMap.put("fuuka", fuukaLoadouts);
-	}
-	
 	private void initPersonaCharFlagsMap () {
 		// Junpei 198 (0xC6) vs 199 (0xC7)
 		// Yukari 192 (0xC0) vs 193 (0xC1)
@@ -715,19 +519,21 @@ public class SaveFile {
 		playerLevel = MAX_LEVEL;
 		playerExp = MAX_EXP;
 		for (int i = 0; i < partyMember.length; i++) {
-			levelMap.put(partyMember[i] + "Level", MAX_LEVEL);
-			expMap.put(partyMember[i] + "Exp", MAX_EXP);
+			partyMemberMap.get(partyMember[i]).setLevel(MAX_LEVEL);
+			partyMemberMap.get(partyMember[i]).setExp(MAX_EXP);
 		}
 		updateCharacterSkills();
+		updatePartyAttributes();
 	}	
 	
 	// Set every party character's level and exp to that of the MC.
 	public void setToMC () { 
 		for (int i = 0; i < partyMember.length; i++) {
-			levelMap.put(partyMember[i] + "Level", playerLevel);
-			expMap.put(partyMember[i] + "Exp", playerExp);
+			partyMemberMap.get(partyMember[i]).setLevel(playerLevel);
+			partyMemberMap.get(partyMember[i]).setExp(playerExp);
 		}
 		updateCharacterSkills();
+		updatePartyAttributes();
 	}
 	
 	// Sets exp to be correct for level.
@@ -747,63 +553,41 @@ public class SaveFile {
 	
 	// Update all character's skills based on their level and ultimate persona status.
 	public void updateCharacterSkills () {
-		int currLevel;
-		boolean isUlt = false;
-		Object[][] charLoadouts;
-		String loadout = "";
 		for (int i = 0; i < partyMember.length; i++) {
-			currLevel = levelMap.get(partyMember[i] + "Level");
-			charLoadouts = loadoutsMap.get(partyMember[i]);
-			
-			if (i != 6 && i != 7) { // Not Shinjiro or Koromaru, who don't have ult personas
-				isUlt = ultFlagMap.get(partyMember[i]);
-			} 
-			
-			for (int j = charLoadouts.length - 1; j >= 0; j--) {
-				if (currLevel >= (Integer) charLoadouts[j][0]) {
-					if (i == 6 || i == 7) { // No ultimate persona
-						loadout = ((String) charLoadouts[j][1]).replaceAll("\\s+","");
-						break;
-					} else {
-						if ((Boolean) charLoadouts[j][1] && isUlt) {
-							loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","");
-							break;
-						} else if (!(Boolean) charLoadouts[j][1]) {
-							if (i == 0) { // Junpei is special case
-								if (isUlt) {
-									loadout = "5F02" + ((String) charLoadouts[j][2]).replaceAll("\\s+","");
-									break;
-								} else {
-									loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","") + "0000";
-									break;
-								}
-							} else { // Rest of party is simple.
-								loadout = ((String) charLoadouts[j][2]).replaceAll("\\s+","");
-								break;	
-							}
-						}
-					}
-				}
-			}
-		skillMap.replace(partyMember[i] + "Skills", loadout);
+			partyMemberMap.get(partyMember[i]).updateCurrentSkills();
 		}
 	}
 	
+	public void updatePartyAttributes () {
+		for (int i = 0; i < partyMember.length; i++) {
+			partyMemberMap.get(partyMember[i]).updateAttributes();
+		}
+	}
+	
+	// Update the persona flag value of each character based on the ult flag value
 	public void updatePersonaFlags () {
 		boolean isUlt;
 		int[] currFlags;
 		for (int i = 0; i < partyMember.length; i++) {
-			if (i != 6 && i != 7) {
-				isUlt = ultFlagMap.get(partyMember[i]);
+			PartyMember currMember = partyMemberMap.get(partyMember[i]);
+			if (i != 6 && i != 7) { // Shinjiro and Koromaru have no ult persona
+				isUlt = currMember.getHasUlt();
 				currFlags = personaCharFlagsMap.get(partyMember[i]);
 				if (isUlt) {
-					personaFlagMap.replace(partyMember[i], currFlags[1]);
+					currMember.setPersonaFlag(currFlags[1]);
 				} else {
-					personaFlagMap.replace(partyMember[i], currFlags[0]);
+					currMember.setPersonaFlag(currFlags[0]);
 				}
 			}		
 		}
 		
+	}
+	
+	private void initPartyMemberMap() {
+		for (int i = 0; i < partyMember.length; i++) {
+			String currChar = partyMember[i];
+			partyMemberMap.put(currChar, new PartyMember(currChar));
+		}
 	}
 	
 }
