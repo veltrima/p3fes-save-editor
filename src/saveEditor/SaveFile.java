@@ -290,8 +290,6 @@ public class SaveFile {
 			letterHex = bytesToHex(letterBytes);
 			sb.append(nameHexToLetter.get(letterHex));
 		}
-		
-		System.out.println(sb.toString());	
 		return sb.toString();
 	}
 	

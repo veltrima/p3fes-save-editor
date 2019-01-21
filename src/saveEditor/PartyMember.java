@@ -214,6 +214,8 @@ public class PartyMember {
 	
 	public PartyMember (String characterName) {
 		name = characterName;
+		initAttributeMap();
+		initLoadoutMap();
 		initLoadouts();
 	}
 	
@@ -353,7 +355,8 @@ public class PartyMember {
 		
 	// Initialize the loadout lists for each character.
 	private void initLoadouts() {
-		Object[][] loadoutList = loadoutMap.get(name);
+		System.out.println(this.name);
+		Object[][] loadoutList = loadoutMap.get(this.name);
 		for (int i = 0; i < loadoutList.length; i++) {
 			Loadout currLoadout = new Loadout((Integer) loadoutList[i][0], 
 											  (Boolean) loadoutList[i][1], 

@@ -34,10 +34,22 @@ import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.SystemColor;
+import java.awt.Color;
+import javax.swing.JPanel;
+import java.awt.Button;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JTextArea;
+import java.awt.Toolkit;
 
 public class EditorApplication {
 
@@ -74,14 +86,6 @@ public class EditorApplication {
 	private JLabel lblMc;
 	private JTextField txtMclevel;
 	private JTextField txtMcexp;
-	private JLabel lblAcademics;
-	private JLabel lblCharm;
-	private JLabel lblCourage;
-	private JSpinner spinnerAca;
-	private JSpinner spinnerCha;
-	private JSpinner spinnerCou;
-	private JTextField txtYen;
-	private JTextField txtPlumes;
 	private JLabel label;
 	private JSpinner spinnerRev;
 	private JCheckBox checkJult;
@@ -94,6 +98,34 @@ public class EditorApplication {
 	
 	private FileReader fr;
 	private SaveFile currentSave;
+	
+	private Color personaOrange = new java.awt.Color (255, 197, 74);
+	private Color personaNavy = new java.awt.Color (0, 59, 88);
+	private Color personaBlue = new java.awt.Color(36, 149, 255);
+	private Color personaLightBlue = new java.awt.Color(107, 174, 255);
+	private Color personaCyan = new java.awt.Color(99, 199, 249);
+	private Color personaLightGrey = new java.awt.Color(186, 188, 185);
+	private Color personaDarkGrey = new java.awt.Color(60, 60, 60);
+	private JPanel playerFieldPanel;
+	private JPanel socialStatsPanel;
+	private JLabel label_1;
+	private JLabel label_2;
+	private JSpinner spinnerAca;
+	private JLabel label_3;
+	private JSpinner spinnerCha;
+	private JSpinner spinnerCou;
+	private JPanel itemPanel;
+	private JLabel label_4;
+	private JLabel label_5;
+	private JTextField txtYen;
+	private JTextField txtPlumes;
+	private JLabel lblItems;
+	private JLabel lblFlags;
+	private JPanel flagPanel;
+	private JPanel underline;
+	private JPanel panel;
+	private JLabel lblForPs;
+	private JLabel lblGithubcomveltrima;
 	
 	/**
 	 * Launch the application.
@@ -123,8 +155,13 @@ public class EditorApplication {
 	 */
 	private void initialize() {
 		frmPfesSaveEditor = new JFrame();
+		// TODO: Get this path sorted out
+		frmPfesSaveEditor.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\matth\\git\\p3fes-save-editor\\resources\\editor-icon.png"));
+
+		frmPfesSaveEditor.setBackground(Color.ORANGE);
+		frmPfesSaveEditor.getContentPane().setBackground(personaBlue);
 		frmPfesSaveEditor.setTitle("P3:FES Save Editor");
-		frmPfesSaveEditor.setBounds(100, 100, 574, 620);
+		frmPfesSaveEditor.setBounds(100, 100, 600, 769);
 		frmPfesSaveEditor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPfesSaveEditor.getContentPane().setLayout(null);
 		
@@ -151,8 +188,9 @@ public class EditorApplication {
 		plumesFormat.setPlaceholderCharacter(' '); */
 		
 		JButton btnImport = new JButton("Import");
+		btnImport.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnImport.setToolTipText("Import save file.");
-		btnImport.setBounds(343, 16, 93, 29);
+		btnImport.setBounds(333, 43, 108, 30);
 		btnImport.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -177,11 +215,30 @@ public class EditorApplication {
 				}		  
 		    }
 		});
+		
+		JLabel lblFirstName = new JLabel("First Name");
+		lblFirstName.setForeground(personaNavy);
+		lblFirstName.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblFirstName.setBounds(15, 22, 100, 20);
+		frmPfesSaveEditor.getContentPane().add(lblFirstName);
+		
+		lblItems = new JLabel("Items");
+		lblItems.setForeground(new Color(0, 59, 88));
+		lblItems.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblItems.setBounds(333, 269, 126, 20);
+		frmPfesSaveEditor.getContentPane().add(lblItems);
+		
+		lblFlags = new JLabel("Flags");
+		lblFlags.setForeground(new Color(0, 59, 88));
+		lblFlags.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblFlags.setBounds(333, 401, 126, 20);
+		frmPfesSaveEditor.getContentPane().add(lblFlags);
 		frmPfesSaveEditor.getContentPane().add(btnImport);
 			
 		JButton btnExport = new JButton("Export");
+		btnExport.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnExport.setToolTipText("Export to save file.");
-		btnExport.setBounds(442, 16, 93, 29);
+		btnExport.setBounds(452, 44, 108, 29);
 		btnExport.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -201,213 +258,19 @@ public class EditorApplication {
 		
 		// Player name
 		txtFirstName = new JTextField();
+		txtFirstName.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtFirstName.setBounds(15, 46, 120, 26);
 		frmPfesSaveEditor.getContentPane().add(txtFirstName);
 		txtFirstName.setColumns(10);
 		
 		txtLastName = new JTextField();
+		txtLastName.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtLastName.setColumns(10);
 		txtLastName.setBounds(179, 46, 120, 26);
 		frmPfesSaveEditor.getContentPane().add(txtLastName);
 		
-		
-		// Characters
-		// MC
-		lblMc = new JLabel("MC");
-		lblMc.setBounds(15, 128, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblMc);
-		
-		txtMclevel = new JTextField();
-		txtMclevel.setColumns(10);
-		txtMclevel.setBounds(99, 125, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtMclevel);
-		
-		txtMcexp = new JTextField();
-		txtMcexp.setColumns(10);
-		txtMcexp.setBounds(162, 125, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtMcexp);
-		
-		// Junpei
-		lblJunpei = new JLabel("Junpei");
-		lblJunpei.setBounds(15, 167, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblJunpei);
-		
-		txtJlevel = new JTextField();
-		txtJlevel.setColumns(10);
-		txtJlevel.setBounds(99, 164, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtJlevel);
-		
-		txtJexp = new JTextField();
-		txtJexp.setColumns(10);
-		txtJexp.setBounds(162, 164, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtJexp);
-		
-		// Yukari
-		lblYukari = new JLabel("Yukari");
-		lblYukari.setBounds(15, 206, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblYukari);
-		
-		txtYlevel = new JTextField();
-		txtYlevel.setBounds(99, 203, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtYlevel);
-		txtYlevel.setColumns(10);
-		
-		txtYexp = new JTextField();
-		txtYexp.setBounds(162, 203, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtYexp);
-		txtYexp.setColumns(10);
-		
-		// Akihiko
-		lblAkihiko = new JLabel("Akihiko");
-		lblAkihiko.setBounds(15, 245, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblAkihiko);
-		
-		txtAlevel = new JTextField();
-		txtAlevel.setColumns(10);
-		txtAlevel.setBounds(99, 242, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtAlevel);
-		
-		txtAexp = new JTextField();
-		txtAexp.setColumns(10);
-		txtAexp.setBounds(162, 242, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtAexp);
-		
-		// Mitsuru
-		lblMitsuru = new JLabel("Mitsuru");
-		lblMitsuru.setBounds(15, 284, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblMitsuru);
-		
-		txtMlevel = new JTextField();
-		txtMlevel.setColumns(10);
-		txtMlevel.setBounds(99, 281, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtMlevel);
-		
-		txtMexp = new JTextField();
-		txtMexp.setColumns(10);
-		txtMexp.setBounds(162, 281, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtMexp);
-		
-		// Fuuka 
-		lblFuuka = new JLabel("Fuuka");
-		lblFuuka.setBounds(15, 323, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblFuuka);
-		
-		txtFlevel = new JTextField();
-		txtFlevel.setColumns(10);
-		txtFlevel.setBounds(99, 320, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtFlevel);
-		
-		txtFexp = new JTextField();
-		txtFexp.setColumns(10);
-		txtFexp.setBounds(162, 320, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtFexp);
-		
-		// Ken
-		lblKen = new JLabel("Ken");
-		lblKen.setBounds(15, 362, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblKen);
-		
-		txtKlevel = new JTextField();
-		txtKlevel.setColumns(10);
-		txtKlevel.setBounds(99, 359, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtKlevel);
-		
-		txtKexp = new JTextField();
-		txtKexp.setColumns(10);
-		txtKexp.setBounds(162, 359, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtKexp);
-		
-		// Aigis
-		lblAigis = new JLabel("Aigis");
-		lblAigis.setBounds(15, 401, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblAigis);
-		
-		txtAilevel = new JTextField();
-		txtAilevel.setColumns(10);
-		txtAilevel.setBounds(99, 398, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtAilevel);
-		
-		txtAiexp = new JTextField();
-		txtAiexp.setColumns(10);
-		txtAiexp.setBounds(162, 398, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtAiexp);
-		
-		// Koromaru
-		lblKoromaru = new JLabel("Koromaru");
-		lblKoromaru.setBounds(15, 484, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblKoromaru);
-		
-		txtKolevel = new JTextField();
-		txtKolevel.setColumns(10);
-		txtKolevel.setBounds(99, 481, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtKolevel);
-		
-		txtKoexp = new JTextField();
-		txtKoexp.setColumns(10);
-		txtKoexp.setBounds(162, 481, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtKoexp);
-		
-		// Shinjiro
-		lblShinjiro = new JLabel("Shinjiro");
-		lblShinjiro.setBounds(15, 440, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblShinjiro);
-		
-		txtSlevel = new JTextField();
-		txtSlevel.setColumns(10);
-		txtSlevel.setBounds(99, 437, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(txtSlevel);
-		
-		txtSexp = new JTextField();
-		txtSexp.setColumns(10);
-		txtSexp.setBounds(162, 437, 100, 26);
-		frmPfesSaveEditor.getContentPane().add(txtSexp);
-		
-		
-		// Social stats
-		lblAcademics = new JLabel("Academics");
-		lblAcademics.setBounds(343, 131, 100, 20);
-		frmPfesSaveEditor.getContentPane().add(lblAcademics);
-		
-		spinnerAca = new JSpinner(acaModel);
-		spinnerAca.setBounds(487, 128, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(spinnerAca);
-		
-		lblCharm = new JLabel("Charm");
-		lblCharm.setBounds(343, 170, 100, 20);
-		frmPfesSaveEditor.getContentPane().add(lblCharm);
-		
-		spinnerCha = new JSpinner(chaModel);
-		spinnerCha.setBounds(487, 170, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(spinnerCha);
-		
-		lblCourage = new JLabel("Courage");
-		lblCourage.setBounds(343, 209, 100, 20);
-		frmPfesSaveEditor.getContentPane().add(lblCourage);
-		
-		spinnerCou = new JSpinner(couModel);
-		spinnerCou.setBounds(487, 206, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(spinnerCou);
-		
-		
-		JLabel lblYen = new JLabel("Yen");
-		lblYen.setBounds(343, 283, 69, 20);
-		frmPfesSaveEditor.getContentPane().add(lblYen);
-		
-		JLabel lblRevivalPlumes = new JLabel("Plumes");
-		lblRevivalPlumes.setBounds(343, 322, 120, 20);
-		frmPfesSaveEditor.getContentPane().add(lblRevivalPlumes);
-		
-		txtYen = new JTextField();
-		txtYen.setBounds(454, 278, 81, 26);
-		frmPfesSaveEditor.getContentPane().add(txtYen);
-		txtYen.setColumns(10);
-		
-		txtPlumes = new JTextField();
-		txtPlumes.setColumns(10);
-		txtPlumes.setBounds(454, 317, 81, 26);
-		frmPfesSaveEditor.getContentPane().add(txtPlumes);
-		
 		JButton btnMatchAll = new JButton("Set Party to MC");
+		btnMatchAll.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnMatchAll.setToolTipText("Sets the level and exp of all party members to be that of the player.");
 		btnMatchAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -417,11 +280,12 @@ public class EditorApplication {
 				}	
 			}
 		});
-		btnMatchAll.setBounds(142, 519, 157, 29);
+		btnMatchAll.setBounds(120, 565, 192, 30);
 		frmPfesSaveEditor.getContentPane().add(btnMatchAll);
 		
 		JButton btnMaxAll = new JButton("Max All");
-		btnMaxAll.setBounds(15, 519, 115, 29);
+		btnMaxAll.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		btnMaxAll.setBounds(120, 530, 192, 30);
 		btnMaxAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (currentSave != null) {
@@ -432,65 +296,59 @@ public class EditorApplication {
 		});
 		frmPfesSaveEditor.getContentPane().add(btnMaxAll);
 		
-		JLabel lblRevivalFlags = new JLabel("Revival Flags (of 4)");
-		lblRevivalFlags.setBounds(343, 401, 120, 20);
-		frmPfesSaveEditor.getContentPane().add(lblRevivalFlags);
+		flagPanel = new JPanel();
+		flagPanel.setBorder(null);
+		flagPanel.setLayout(null);
+		flagPanel.setBackground(new Color(107, 174, 255));
+		flagPanel.setBounds(337, 419, 223, 88);
+		frmPfesSaveEditor.getContentPane().add(flagPanel);
+		
+		label = new JLabel("(11/06, 11/11, 11/14, 11/22)");
+		label.setForeground(personaNavy);
+		label.setBounds(15, 52, 192, 20);
+		flagPanel.add(label);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		
+		JLabel lblRevivalFlags = new JLabel("Revival Flags");
+		lblRevivalFlags.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblRevivalFlags.setForeground(personaNavy);
+		lblRevivalFlags.setBounds(15, 17, 142, 20);
+		flagPanel.add(lblRevivalFlags);
 		
 		spinnerRev = new JSpinner(revModel);
-		spinnerRev.setBounds(487, 398, 48, 26);
-		frmPfesSaveEditor.getContentPane().add(spinnerRev);
+		spinnerRev.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerRev.setBounds(158, 16, 50, 25);
+		flagPanel.add(spinnerRev);
 		
 		JLabel lblLevel = new JLabel("Level");
-		lblLevel.setBounds(99, 89, 48, 20);
+		lblLevel.setForeground(personaNavy);
+		lblLevel.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblLevel.setBounds(110, 102, 48, 20);
 		frmPfesSaveEditor.getContentPane().add(lblLevel);
 		
 		JLabel lblExp = new JLabel("Exp");
-		lblExp.setBounds(162, 89, 69, 20);
+		lblExp.setForeground(personaNavy);
+		lblExp.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblExp.setBounds(170, 102, 69, 20);
 		frmPfesSaveEditor.getContentPane().add(lblExp);
 		
 		JLabel lblUltPersona = new JLabel("Ult.");
-		lblUltPersona.setBounds(272, 89, 35, 20);
+		lblUltPersona.setForeground(personaNavy);
+		lblUltPersona.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblUltPersona.setBounds(280, 102, 35, 20);
 		frmPfesSaveEditor.getContentPane().add(lblUltPersona);
 		
-		checkJult = new JCheckBox("");
-		checkJult.setBounds(273, 163, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkJult);
-		
-		checkYult = new JCheckBox("");
-		checkYult.setBounds(273, 202, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkYult);
-		
-		checkAult = new JCheckBox("");
-		checkAult.setBounds(273, 241, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkAult);
-		
-		checkMult = new JCheckBox("");
-		checkMult.setBounds(273, 280, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkMult);
-		
-		checkFult = new JCheckBox("");
-		checkFult.setBounds(273, 319, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkFult);
-		
-		checkKult = new JCheckBox("");
-		checkKult.setBounds(273, 358, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkKult);
-		
-		checkAiult = new JCheckBox("");
-		checkAiult.setBounds(273, 397, 26, 29);
-		frmPfesSaveEditor.getContentPane().add(checkAiult);
-		
-		JLabel lblFirstName = new JLabel("First Name");
-		lblFirstName.setBounds(15, 16, 100, 20);
-		frmPfesSaveEditor.getContentPane().add(lblFirstName);
-		
 		JLabel lblLastName = new JLabel("Last Name");
-		lblLastName.setBounds(179, 16, 93, 20);
+		lblLastName.setForeground(personaNavy);
+		lblLastName.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblLastName.setBounds(179, 22, 120, 20);
 		frmPfesSaveEditor.getContentPane().add(lblLastName);
 		
 		JButton btnUpdate = new JButton("Update");
+		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnUpdate.setToolTipText("Updates the save file object. Required before exporting.");
-		btnUpdate.setBounds(343, 479, 192, 29);
+		btnUpdate.setBounds(337, 530, 223, 65);
 		btnUpdate.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -502,11 +360,363 @@ public class EditorApplication {
 		});
 		frmPfesSaveEditor.getContentPane().add(btnUpdate);
 		
-		label = new JLabel("(11/06, 11/11, 11/14, 11/22)");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		label.setBounds(343, 434, 192, 20);
-		frmPfesSaveEditor.getContentPane().add(label);
+		playerFieldPanel = new JPanel();
+		playerFieldPanel.setBorder(null);
+		playerFieldPanel.setBackground(personaNavy);
+		playerFieldPanel.setBounds(110, 120, 212, 485);
+		frmPfesSaveEditor.getContentPane().add(playerFieldPanel);
+		playerFieldPanel.setLayout(null);
+		
+		txtMclevel = new JTextField();
+		txtMclevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtMclevel.setBounds(10, 10, 50, 25);
+		playerFieldPanel.add(txtMclevel);
+		txtMclevel.setColumns(10);
+		
+		txtMcexp = new JTextField();
+		txtMcexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtMcexp.setBounds(70, 10, 100, 25);
+		playerFieldPanel.add(txtMcexp);
+		txtMcexp.setColumns(10);
+		
+		txtJlevel = new JTextField();
+		txtJlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtJlevel.setBounds(10, 50, 50, 25);
+		playerFieldPanel.add(txtJlevel);
+		txtJlevel.setColumns(10);
+		
+		txtJexp = new JTextField();
+		txtJexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtJexp.setBounds(70, 50, 100, 25);
+		playerFieldPanel.add(txtJexp);
+		txtJexp.setColumns(10);
+		
+		checkJult = new JCheckBox("");
+		checkJult.setBounds(180, 50, 25, 25);
+		playerFieldPanel.add(checkJult);
+		checkJult.setBackground(personaNavy);
+		
+		txtYlevel = new JTextField();
+		txtYlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtYlevel.setBounds(10, 90, 50, 25);
+		playerFieldPanel.add(txtYlevel);
+		txtYlevel.setColumns(10);
+		
+		txtYexp = new JTextField();
+		txtYexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtYexp.setBounds(70, 90, 100, 25);
+		playerFieldPanel.add(txtYexp);
+		txtYexp.setColumns(10);
+		
+		checkYult = new JCheckBox("");
+		checkYult.setBounds(180, 90, 25, 25);
+		playerFieldPanel.add(checkYult);
+		checkYult.setBackground(personaNavy);
+		
+		txtAlevel = new JTextField();
+		txtAlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtAlevel.setBounds(10, 130, 50, 25);
+		playerFieldPanel.add(txtAlevel);
+		txtAlevel.setColumns(10);
+		
+		txtAexp = new JTextField();
+		txtAexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtAexp.setBounds(70, 130, 100, 25);
+		playerFieldPanel.add(txtAexp);
+		txtAexp.setColumns(10);
+		
+		checkAult = new JCheckBox("");
+		checkAult.setBounds(180, 130, 25, 25);
+		playerFieldPanel.add(checkAult);
+		checkAult.setBackground(personaNavy);
+		
+		txtMlevel = new JTextField();
+		txtMlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtMlevel.setBounds(10, 170, 50, 25);
+		playerFieldPanel.add(txtMlevel);
+		txtMlevel.setColumns(10);
+		
+		txtMexp = new JTextField();
+		txtMexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtMexp.setBounds(70, 170, 100, 25);
+		playerFieldPanel.add(txtMexp);
+		txtMexp.setColumns(10);
+		
+		checkMult = new JCheckBox("");
+		checkMult.setBounds(180, 170, 25, 25);
+		playerFieldPanel.add(checkMult);
+		checkMult.setBackground(personaNavy);
+		
+		txtFlevel = new JTextField();
+		txtFlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtFlevel.setBounds(10, 210, 50, 25);
+		playerFieldPanel.add(txtFlevel);
+		txtFlevel.setColumns(10);
+		
+		txtFexp = new JTextField();
+		txtFexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtFexp.setBounds(70, 210, 100, 25);
+		playerFieldPanel.add(txtFexp);
+		txtFexp.setColumns(10);
+		
+		checkFult = new JCheckBox("");
+		checkFult.setForeground(new Color(0, 0, 0));
+		checkFult.setBounds(180, 210, 25, 25);
+		playerFieldPanel.add(checkFult);
+		checkFult.setBackground(personaNavy);
+		
+		txtKlevel = new JTextField();
+		txtKlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtKlevel.setBounds(10, 250, 50, 25);
+		playerFieldPanel.add(txtKlevel);
+		txtKlevel.setColumns(10);
+		
+		txtKexp = new JTextField();
+		txtKexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtKexp.setBounds(70, 250, 100, 25);
+		playerFieldPanel.add(txtKexp);
+		txtKexp.setColumns(10);
+		
+		checkKult = new JCheckBox("");
+		checkKult.setBounds(180, 250, 25, 25);
+		playerFieldPanel.add(checkKult);
+		checkKult.setBackground(personaNavy);
+		
+		txtAilevel = new JTextField();
+		txtAilevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtAilevel.setBounds(10, 290, 50, 25);
+		playerFieldPanel.add(txtAilevel);
+		txtAilevel.setColumns(10);
+		
+		txtAiexp = new JTextField();
+		txtAiexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtAiexp.setBounds(70, 290, 100, 25);
+		playerFieldPanel.add(txtAiexp);
+		txtAiexp.setColumns(10);
+		
+		checkAiult = new JCheckBox("");
+		checkAiult.setBounds(180, 290, 25, 25);
+		playerFieldPanel.add(checkAiult);
+		checkAiult.setBackground(personaNavy);
+		
+		txtKolevel = new JTextField();
+		txtKolevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtKolevel.setBounds(10, 330, 50, 25);
+		playerFieldPanel.add(txtKolevel);
+		txtKolevel.setColumns(10);
+		
+		txtKoexp = new JTextField();
+		txtKoexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtKoexp.setBounds(70, 330, 100, 25);
+		playerFieldPanel.add(txtKoexp);
+		txtKoexp.setColumns(10);
+		
+		txtSlevel = new JTextField();
+		txtSlevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtSlevel.setBounds(10, 370, 50, 25);
+		playerFieldPanel.add(txtSlevel);
+		txtSlevel.setColumns(10);
+		
+		txtSexp = new JTextField();
+		txtSexp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtSexp.setBounds(70, 370, 100, 25);
+		playerFieldPanel.add(txtSexp);
+		txtSexp.setColumns(10);
+		
+		JPanel partyNamePanel = new JPanel();
+		partyNamePanel.setBorder(null);
+		partyNamePanel.setBackground(personaOrange);
+		partyNamePanel.setBounds(0, 120, 110, 485);
+		frmPfesSaveEditor.getContentPane().add(partyNamePanel);
+		partyNamePanel.setLayout(null);
+		
+		
+		// Characters
+		// MC
+		lblMc = new JLabel("MC");
+		lblMc.setForeground(personaNavy);
+		lblMc.setBounds(15, 15, 73, 20);
+		partyNamePanel.add(lblMc);
+		lblMc.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Junpei
+		lblJunpei = new JLabel("Junpei");
+		lblJunpei.setForeground(personaNavy);
+		lblJunpei.setBounds(15, 55, 73, 20);
+		partyNamePanel.add(lblJunpei);
+		lblJunpei.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Yukari
+		lblYukari = new JLabel("Yukari");
+		lblYukari.setForeground(personaNavy);
+		lblYukari.setBounds(15, 95, 73, 20);
+		partyNamePanel.add(lblYukari);
+		lblYukari.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Akihiko
+		lblAkihiko = new JLabel("Akihiko");
+		lblAkihiko.setForeground(personaNavy);
+		lblAkihiko.setBounds(15, 135, 73, 20);
+		partyNamePanel.add(lblAkihiko);
+		lblAkihiko.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Mitsuru
+		lblMitsuru = new JLabel("Mitsuru");
+		lblMitsuru.setForeground(personaNavy);
+		lblMitsuru.setBounds(15, 175, 73, 20);
+		partyNamePanel.add(lblMitsuru);
+		lblMitsuru.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Fuuka 
+		lblFuuka = new JLabel("Fuuka");
+		lblFuuka.setForeground(personaNavy);
+		lblFuuka.setBounds(15, 215, 73, 20);
+		partyNamePanel.add(lblFuuka);
+		lblFuuka.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Ken
+		lblKen = new JLabel("Ken");
+		lblKen.setForeground(personaNavy);
+		lblKen.setBounds(15, 255, 73, 20);
+		partyNamePanel.add(lblKen);
+		lblKen.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Aigis
+		lblAigis = new JLabel("Aigis");
+		lblAigis.setForeground(personaNavy);
+		lblAigis.setBounds(15, 295, 73, 20);
+		partyNamePanel.add(lblAigis);
+		lblAigis.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Shinjiro
+		lblShinjiro = new JLabel("Shinjiro");
+		lblShinjiro.setForeground(personaNavy);
+		lblShinjiro.setBounds(15, 375, 73, 20);
+		partyNamePanel.add(lblShinjiro);
+		lblShinjiro.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		// Koromaru
+		lblKoromaru = new JLabel("Koromaru");
+		lblKoromaru.setForeground(personaNavy);
+		lblKoromaru.setBounds(15, 335, 90, 20);
+		partyNamePanel.add(lblKoromaru);
+		lblKoromaru.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
+		socialStatsPanel = new JPanel();
+		socialStatsPanel.setBorder(null);
+		socialStatsPanel.setBackground(personaLightBlue);
+		socialStatsPanel.setBounds(337, 120, 223, 123);
+		frmPfesSaveEditor.getContentPane().add(socialStatsPanel);
+		socialStatsPanel.setLayout(null);
+		
+		label_1 = new JLabel("Academics");
+		label_1.setForeground(personaNavy);
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label_1.setBounds(15, 15, 99, 20);
+		socialStatsPanel.add(label_1);
+		
+		spinnerAca = new JSpinner(acaModel);
+		spinnerAca.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerAca.setBounds(158, 15, 50, 25);
+		socialStatsPanel.add(spinnerAca);
+		
+		label_2 = new JLabel("Charm");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label_2.setForeground(personaNavy);
+		label_2.setBounds(15, 50, 59, 20);
+		socialStatsPanel.add(label_2);
+		
+		spinnerCha = new JSpinner(chaModel);
+		spinnerCha.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerCha.setBounds(158, 50, 50, 25);
+		socialStatsPanel.add(spinnerCha);
+		
+		label_3 = new JLabel("Courage");
+		label_3.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label_3.setForeground(personaNavy);
+		label_3.setBounds(15, 85, 80, 20);
+		socialStatsPanel.add(label_3);
+		
+		spinnerCou = new JSpinner(couModel);
+		spinnerCou.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerCou.setBounds(158, 85, 50, 25);
+		socialStatsPanel.add(spinnerCou);
+		
+		JLabel lblSocialStats = new JLabel("Social Stats");
+		lblSocialStats.setForeground(personaNavy);
+		lblSocialStats.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblSocialStats.setBounds(333, 102, 126, 20);
+		frmPfesSaveEditor.getContentPane().add(lblSocialStats);
+		
+		itemPanel = new JPanel();
+		itemPanel.setBorder(null);
+		itemPanel.setBackground(personaLightBlue);
+		itemPanel.setBounds(337, 287, 223, 88);
+		frmPfesSaveEditor.getContentPane().add(itemPanel);
+		itemPanel.setLayout(null);
+		
+		label_4 = new JLabel("Yen");
+		label_4.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label_4.setForeground(personaNavy);
+		label_4.setBounds(15, 17, 27, 20);
+		itemPanel.add(label_4);
+		
+		label_5 = new JLabel("Plumes");
+		label_5.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label_5.setForeground(personaNavy);
+		label_5.setBounds(15, 54, 51, 20);
+		itemPanel.add(label_5);
+		
+		txtYen = new JTextField();
+		txtYen.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtYen.setBounds(108, 15, 100, 25);
+		txtYen.setColumns(10);
+		itemPanel.add(txtYen);
+		
+		txtPlumes = new JTextField();
+		txtPlumes.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtPlumes.setBounds(108, 50, 100, 25);
+		txtPlumes.setColumns(10);
+		itemPanel.add(txtPlumes);
+		
+		underline = new JPanel();
+		underline.setBorder(null);
+		underline.setBackground(personaCyan);
+		underline.setBounds(15, 37, 120, 5);
+		frmPfesSaveEditor.getContentPane().add(underline);
+		underline.setLayout(null);
+		
+		panel = new JPanel();
+		panel.setLayout(null);
+		panel.setBorder(null);
+		panel.setBackground(new Color(99, 199, 249));
+		panel.setBounds(179, 37, 120, 5);
+		frmPfesSaveEditor.getContentPane().add(panel);
+		
+		JPanel creditPanel = new JPanel();
+		creditPanel.setBorder(null);
+		creditPanel.setLayout(null);
+		creditPanel.setBackground(new Color(107, 174, 255));
+		creditPanel.setBounds(15, 626, 545, 70);
+		frmPfesSaveEditor.getContentPane().add(creditPanel);
+		
+		JLabel lblPersonaFes = new JLabel("Persona 3: FES Save Editor (PS2/PS3) by Matthew Taillefer Veltri");
+		lblPersonaFes.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		lblPersonaFes.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPersonaFes.setBounds(0, 5, 539, 20);
+		creditPanel.add(lblPersonaFes);
+		
+		lblForPs = new JLabel("Released under GPL-3.0");
+		lblForPs.setHorizontalAlignment(SwingConstants.CENTER);
+		lblForPs.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		lblForPs.setBounds(0, 25, 539, 20);
+		creditPanel.add(lblForPs);
+		
+		lblGithubcomveltrima = new JLabel("github.com/veltrima");
+		lblGithubcomveltrima.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGithubcomveltrima.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		lblGithubcomveltrima.setBounds(0, 45, 539, 20);
+		creditPanel.add(lblGithubcomveltrima);
 		
 		
 	}
