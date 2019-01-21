@@ -50,6 +50,8 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
 import java.awt.Toolkit;
+import javax.swing.border.BevelBorder;
+import javax.swing.JProgressBar;
 
 public class EditorApplication {
 
@@ -225,13 +227,13 @@ public class EditorApplication {
 		lblItems = new JLabel("Items");
 		lblItems.setForeground(new Color(0, 59, 88));
 		lblItems.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblItems.setBounds(333, 269, 126, 20);
+		lblItems.setBounds(333, 263, 126, 20);
 		frmPfesSaveEditor.getContentPane().add(lblItems);
 		
 		lblFlags = new JLabel("Flags");
 		lblFlags.setForeground(new Color(0, 59, 88));
 		lblFlags.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblFlags.setBounds(333, 401, 126, 20);
+		lblFlags.setBounds(333, 395, 126, 20);
 		frmPfesSaveEditor.getContentPane().add(lblFlags);
 		frmPfesSaveEditor.getContentPane().add(btnImport);
 			
@@ -324,19 +326,19 @@ public class EditorApplication {
 		JLabel lblLevel = new JLabel("Level");
 		lblLevel.setForeground(personaNavy);
 		lblLevel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblLevel.setBounds(110, 102, 48, 20);
+		lblLevel.setBounds(110, 103, 48, 20);
 		frmPfesSaveEditor.getContentPane().add(lblLevel);
 		
 		JLabel lblExp = new JLabel("Exp");
 		lblExp.setForeground(personaNavy);
 		lblExp.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblExp.setBounds(170, 102, 69, 20);
+		lblExp.setBounds(170, 103, 69, 20);
 		frmPfesSaveEditor.getContentPane().add(lblExp);
 		
 		JLabel lblUltPersona = new JLabel("Ult.");
 		lblUltPersona.setForeground(personaNavy);
 		lblUltPersona.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblUltPersona.setBounds(280, 102, 35, 20);
+		lblUltPersona.setBounds(280, 103, 35, 20);
 		frmPfesSaveEditor.getContentPane().add(lblUltPersona);
 		
 		JLabel lblLastName = new JLabel("Last Name");
@@ -361,7 +363,6 @@ public class EditorApplication {
 		frmPfesSaveEditor.getContentPane().add(btnUpdate);
 		
 		playerFieldPanel = new JPanel();
-		playerFieldPanel.setBorder(null);
 		playerFieldPanel.setBackground(personaNavy);
 		playerFieldPanel.setBounds(110, 120, 212, 485);
 		frmPfesSaveEditor.getContentPane().add(playerFieldPanel);
@@ -605,7 +606,7 @@ public class EditorApplication {
 		socialStatsPanel = new JPanel();
 		socialStatsPanel.setBorder(null);
 		socialStatsPanel.setBackground(personaLightBlue);
-		socialStatsPanel.setBounds(337, 120, 223, 123);
+		socialStatsPanel.setBounds(337, 127, 223, 123);
 		frmPfesSaveEditor.getContentPane().add(socialStatsPanel);
 		socialStatsPanel.setLayout(null);
 		
@@ -645,7 +646,7 @@ public class EditorApplication {
 		JLabel lblSocialStats = new JLabel("Social Stats");
 		lblSocialStats.setForeground(personaNavy);
 		lblSocialStats.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblSocialStats.setBounds(333, 102, 126, 20);
+		lblSocialStats.setBounds(333, 103, 126, 20);
 		frmPfesSaveEditor.getContentPane().add(lblSocialStats);
 		
 		itemPanel = new JPanel();
