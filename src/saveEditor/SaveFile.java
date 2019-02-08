@@ -14,11 +14,11 @@ public class SaveFile {
 	private int playerLevel, playerExp, yen, plumes;
 	private String playerFirstName, playerLastName, revivalFlag;
 	
-	private int MAX_LEVEL = 99;
-	private int MAX_EXP = 1358428;
+	private static final int MAX_LEVEL = 99;
+	private static final int MAX_EXP = 1358428;
 	
 	// Index at level is exp needed for that level
-	private int[] expNeededPerLevel = {
+	private static final int[] expNeededPerLevel = {
 		-1, 0, 20, 47, 99, 185, 312, 490, 726, 1030, 1410, 1873, 2429, 
 		3085, 3851, 4735, 5744, 6888,8174, 9612, 11210, 12975, 14917,
 		17043, 19363, 21885, 24616, 27566, 30742, 34154, 37810, 41717,
@@ -33,7 +33,7 @@ public class SaveFile {
 		1238640, 1277752, 1317678, 1358428
 	};
 			
-	private String[] partyMember = {
+	private static final String[] partyMember = {
 		"junpei", // 0
 		"yukari", // 1
 		"akihiko", // 2
@@ -45,7 +45,7 @@ public class SaveFile {
 		"fuuka" // 8
 	};
 	
-	private int[] academicsRanks = {
+	private static final int[] academicsRanks = {
 		0,
 		20,
 		80,
@@ -54,7 +54,7 @@ public class SaveFile {
 		260
 	};
 	
-	private int[] charmCourageRanks = {
+	private static final int[] charmCourageRanks = {
 		0,
 		15,
 		30,
@@ -64,13 +64,13 @@ public class SaveFile {
 	};
 	
 	// index 0 with regular persona, index 1 with ultimate persona
-	int[] junpeiPersonaFlags = {198, 199};
-	int[] yukariPersonaFlags = {192, 193};
-	int[] akihikoPersonaFlags = {202, 203};
-	int[] mitsuruPersonaFlags = {196, 197};
-	int[] kenPersonaFlags = {204, 205};
-	int[] aigisPersonaFlags = {194, 195};
-	int[] fuukaPersonaFlags = {200, 201};
+	private static final int[] junpeiPersonaFlags = {198, 199};
+	private static final int[] yukariPersonaFlags = {192, 193};
+	private static final int[] akihikoPersonaFlags = {202, 203};
+	private static final int[] mitsuruPersonaFlags = {196, 197};
+	private static final int[] kenPersonaFlags = {204, 205};
+	private static final int[] aigisPersonaFlags = {194, 195};
+	private static final int[] fuukaPersonaFlags = {200, 201};
 
 	private HashMap<String, PartyMember> partyMemberMap = new HashMap<>();
 	private HashMap<String, int[]> personaCharFlagsMap = new HashMap<>();
@@ -197,11 +197,11 @@ public class SaveFile {
 		partyMemberMap.get(person).setExp(exp);
 	}
 	
-	public int getMaxLevel () {
+	public static int getMaxLevel () {
 		return MAX_LEVEL;
 	}
 	
-	public int getMaxExp () {
+	public static int getMaxExp () {
 		return MAX_EXP;
 	}
 	
@@ -391,18 +391,18 @@ public class SaveFile {
 		}
 	}
 	
-	byte[] intToBytes(int input, int numBytes) {
+	static byte[] intToBytes(int input, int numBytes) {
 		byte[] out = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(input).array(); // Needs to allocate 4 otherwise error is thrown
 		return Arrays.copyOfRange(out, 0, numBytes);
 	}
 	
 	// Thank you https://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-javav
-	byte[] hexToBytes (String input) {
+	static byte[] hexToBytes (String input) {
 		return DatatypeConverter.parseHexBinary(input);
 	}
 	
 	// Thank you https://www.mkyong.com/java/java-how-to-convert-bytes-to-hex/
-	private String bytesToHex(byte[] hashInBytes) {
+	static private String bytesToHex(byte[] hashInBytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : hashInBytes) {
             sb.append(String.format("%02x", b));
@@ -412,7 +412,7 @@ public class SaveFile {
 	
 	// In order to preserve endian-ness (little endian)
 	// Thank you http://www.java67.com/2016/10/3-ways-to-reverse-array-in-java-coding-interview-question.html
-	void arrayReverse (byte[] data) {
+	static void arrayReverse (byte[] data) {
 		for(int i = 0; i < data.length/2; i++) {
 			byte temp = data[i];
 			data[i] = data[data.length - i - 1];
@@ -545,12 +545,12 @@ public class SaveFile {
 	}
 	
 	// Sets exp to be correct for level.
-	public int expForLevel (int lvl) {
+	public static int expForLevel (int lvl) {
 		return expNeededPerLevel[lvl];
 	}
 	
 	// Sets level to be correct for exp.
-	public int levelForExp (int xp) {
+	public static int levelForExp (int xp) {
 		for (int i = expNeededPerLevel.length - 1; i > 0; i--) {
 			if (xp >= expNeededPerLevel[i]) {
 				return i;

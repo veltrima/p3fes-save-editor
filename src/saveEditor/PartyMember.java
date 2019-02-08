@@ -9,7 +9,7 @@ public class PartyMember {
 	// If ultimate up to 58, begin with Spring of Life (5F02)
 	// Else, end with 0000
 	// Format: int level, bool ult persona, string skills
-	private Object[][] junpeiLoadouts = {
+	private static final Object[][] junpeiLoadouts = {
 		{1, false, "7900 0000 0000 0000 0000 0000 0000"}, // 1
 		{5, false, "7900 0100 0000 0000 0000 0000 0000"}, // 5
 		{7, false, "7900 0100 C900 0000 0000 0000 0000"}, // 7
@@ -32,7 +32,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] yukariLoadouts = {
+	private static final Object[][] yukariLoadouts = {
 		{1, false, "C000 0000 0000 0000 0000 0000 0000 0000"}, // 1
 		{5, false, "C000 C700 0000 0000 0000 0000 0000 0000"}, // 5
 		{16, false, "C000 C700 0A00 0000 0000 0000 0000 0000"}, // 16
@@ -52,7 +52,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] mitsuruLoadouts = {
+	private static final Object[][] mitsuruLoadouts = {
 		{1, false, "1300 1600 C000 3900 0000 0000 0000 0000"}, // 1
 		{21, false, "1600 C000 3900 1400 0000 0000 0000 0000"}, // 21	
 		{25, false, "1600 3900 1400 C100 0000 0000 0000 0000"}, // 25
@@ -69,7 +69,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] akihikoLoadouts = {
+	private static final Object[][] akihikoLoadouts = {
 		{1, false, "7400 1C00 C000 0000 0000 0000 0000 0000"}, // 1
 		{16, false, "7400 1C00 C000 CE00 0000 0000 0000 0000"}, // 16
 		{21, false, "7400 1C00 C000 CE00 1F00 0000 0000 0000"}, // 21
@@ -90,7 +90,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] kenLoadouts = {
+	private static final Object[][] kenLoadouts = {
 		{1, false, "2D00 9200 1D00 0000 0000 0000 0000 0000"}, // 1
 		{37, false, "2D00 9200 1D00 C100 0000 0000 0000 0000"}, // 37
 		{41, false, "9200 1D00 C100 2F00 0000 0000 0000 0000"}, // 41
@@ -106,7 +106,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, string skills
-	private Object[][] koromaruLoadouts = {
+	private static final Object[][] koromaruLoadouts = {
 		{1, false, "0200 3300 D800 0000 0000 0000 0000 0000"}, // 1
 		{38, false, "0200 3300 D800 0500 0000 0000 0000 0000"}, // 38
 		{40, false, "0200 3300 D800 0500 2102 0000 0000 0000"}, // 40
@@ -123,7 +123,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] aigisLoadouts = {
+	private static final Object[][] aigisLoadouts = {
 		{1, false, "7200 7300 D800 0000 0000 0000 0000 0000"}, // 1
 		{32, false, "7200 7300 D800 DA00 0000 0000 0000 0000"}, // 32
 		{35, false, "7200 7300 D800 DA00 7A00 0000 0000 0000"}, // 35
@@ -140,7 +140,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, string skills
-	private Object[][] shinjiroLoadouts = {
+	private static final Object[][] shinjiroLoadouts = {
 		{1, false, "2302 2002 7A00 0000 0000 0000 0000 0000"}, // 1
 		{39, false, "2302 2002 7A00 4000 0000 0000 0000 0000"}, // 39
 		{42, false, "2302 7A00 4000 2102 0000 0000 0000 0000"}, // 42
@@ -155,7 +155,7 @@ public class PartyMember {
 	};
 	
 	// Format: int level, bool ult persona, string skills
-	private Object[][] fuukaLoadouts = {
+	private static final Object[][] fuukaLoadouts = {
 		{1, false, "4601 0000 0000 0000 0000 0000 0000 0000"}, // 1
 		{23, false, "4601 4F01 0000 0000 0000 0000 0000 0000"}, // 23
 		{32, false, "4601 4F01 5001 0000 0000 0000 0000 0000"}, // 32
@@ -166,35 +166,35 @@ public class PartyMember {
 	
 	// Format {min stats, max stats}
 	// Stats format: level, strength, magic, endurance, agility, luck
-	int[][] junpeiAttributes = {
+	private static final int[][] junpeiAttributes = {
 			{1, 3, 2, 2, 2, 1},
 			{99, 82, 44, 69, 56, 53}
 	};
-	int[][] yukariAttributes = {
+	private static final int[][] yukariAttributes = {
 			{1, 1, 3, 2, 1, 3},
 			{99, 50, 91, 55, 55, 53}
 	};
-	int[][] mitsuruAttributes = {
+	private static final int[][] mitsuruAttributes = {
 			{18, 11, 16, 11, 12, 11},
 			{99, 55, 85, 52, 61, 51}
 	};
-	int[][] akihikoAttributes = {
+	private static final int[][] akihikoAttributes = {
 			{12, 9, 10, 8, 9, 7},
 			{99, 69, 70, 55, 63, 47}
 	};
-	int[][] kenAttributes = {
+	private static final int[][] kenAttributes = {
 			{36, 21, 25, 23, 26, 20},
 			{99, 55, 66, 58, 70, 55}
 	};
-	int[][] koromaruAttributes = {
+	private static final int[][] koromaruAttributes = {
 			{35, 20, 22, 21, 30, 19},
 			{99, 58, 56, 58, 82, 50}
 	};
-	int[][] aigisAttributes = {
+	private static final int[][] aigisAttributes = {
 			{29, 19, 18, 25, 18, 14},
 			{99, 61, 58, 84, 56, 45}
 	};
-	int[][] shinjiroAttributes = {
+	private static final int[][] shinjiroAttributes = {
 			{37, 32, 20, 27, 22, 17},
 			{99, 84, 52, 69, 57, 45}
 	};

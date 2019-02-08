@@ -3,7 +3,6 @@ package saveEditor;
 /* TODO:
  * Test
  * Check what happens with blank name data.
- * Make layout look less ass
  */
 
 import java.awt.EventQueue;
@@ -361,6 +360,8 @@ public class EditorApplication {
 		    }
 		});
 		frmPfesSaveEditor.getContentPane().add(btnUpdate);
+		
+		// TODO: Why more than 8 chars for name allowed?
 		
 		playerFieldPanel = new JPanel();
 		playerFieldPanel.setBackground(personaNavy);
